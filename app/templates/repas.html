@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saveurs&Co — Les Repas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap');
+
+    :root {
+      --cream: #FAF6F0;
+      --terracotta: #C4622D;
+      --terracotta-dark: #9E4C22;
+      --olive: #5C6B3A;
+      --charcoal: #1E1E1E;
+      --warm-gray: #8A8178;
+      --gold: #D4A843;
+      --border: rgba(30,30,30,0.1);
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-body); background: var(--cream); color: var(--charcoal); }
+
+    /* ─── PAGE HEADER ──────────────────── */
+    .page-header {
+      padding: 5rem 2rem 3rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      margin-top: 68px;
+    }
+    .breadcrumb {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; color: var(--warm-gray);
+      margin-bottom: 1.5rem;
+    }
+    .breadcrumb a { text-decoration: none; color: var(--warm-gray); }
+    .breadcrumb a:hover { color: var(--terracotta); }
+    .breadcrumb i { font-size: 0.6rem; }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 1rem;
+    }
+    .page-title em { font-style: italic; color: var(--terracotta); }
+    .page-subtitle { font-size: 0.95rem; color: var(--warm-gray); line-height: 1.6; }
+
+    /* ─── MAIN LAYOUT ──────────────────── */
+    .main-layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    /* ─── SIDEBAR FILTERS ──────────────── */
+    .sidebar {
+      position: sticky;
+      top: 88px;
+    }
+
+    .filter-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .filter-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--warm-gray);
+      margin-bottom: 1rem;
+    }
+
+    /* Price range */
+    .price-slider {
+      width: 100%;
+      accent-color: var(--terracotta);
+      margin: 0.75rem 0;
+    }
+    .price-labels {
+      display: flex; justify-content: space-between;
+      font-size: 0.75rem; color: var(--warm-gray);
+    }
+
+    /* Country checkboxes */
+    .filter-options { display: flex; flex-direction: column; gap: 6px; }
+    .filter-option {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.82rem; cursor: pointer;
+      padding: 5px 0;
+    }
+    .filter-option input[type="checkbox"] {
+      accent-color: var(--terracotta);
+      width: 15px; height: 15px;
+      cursor: pointer;
+    }
+    .filter-option-flag { font-size: 1rem; }
+    .filter-option-count {
+      margin-left: auto;
+      font-size: 0.7rem;
+      color: var(--warm-gray);
+      background: rgba(30,30,30,0.06);
+      padding: 2px 7px;
+      border-radius: 50px;
+    }
+
+    /* Toggle vege */
+    .vege-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .vege-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--olive);
+    }
+    .toggle-switch {
+      position: relative; width: 42px; height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0;
+      background: rgba(30,30,30,0.12);
+      border-radius: 24px; cursor: pointer;
+      transition: background 0.25s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: white; left: 3px; top: 3px;
+      transition: transform 0.25s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--olive); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    .btn-reset {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: var(--warm-gray);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-reset:hover { border-color: var(--terracotta); color: var(--terracotta); }
+
+    /* ─── CONTENT ───────────────────────── */
+    .content-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+    }
+
+    .results-info {
+      font-size: 0.82rem;
+      color: var(--warm-gray);
+    }
+    .results-info strong { color: var(--charcoal); font-weight: 600; }
+
+    .sort-select {
+      padding: 8px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: var(--charcoal);
+      background: white;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .sort-select:focus { border-color: var(--terracotta); }
+
+    .view-toggle {
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+      background: white;
+    }
+    .view-btn {
+      background: none; border: none;
+      padding: 7px 12px;
+      font-size: 0.85rem;
+      color: var(--warm-gray);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .view-btn.active { background: var(--terracotta); color: white; }
+
+    /* ─── ACTIVE FILTERS ───────────────── */
+    .active-filters {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .filter-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(196,98,45,0.1);
+      color: var(--terracotta);
+      padding: 5px 12px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .filter-tag button {
+      background: none; border: none;
+      color: inherit; cursor: pointer;
+      font-size: 0.7rem; padding: 0;
+      line-height: 1;
+      opacity: 0.7;
+    }
+
+    /* ─── MEALS GRID ───────────────────── */
+    .meals-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .meal-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: all 0.3s;
+      animation: cardIn 0.4s ease both;
+    }
+    .meal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.09);
+    }
+
+    .meal-image {
+      height: 160px;
+      background: linear-gradient(135deg, #f0e8dc, #e8d5c0);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .meal-image img { width: 100%; height: 100%; object-fit: cover; }
+
+    .meal-badge {
+      position: absolute; top: 10px; right: 10px;
+      padding: 3px 9px; border-radius: 50px;
+      font-size: 0.65rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      background: rgba(250,246,240,0.9);
+      backdrop-filter: blur(8px);
+    }
+    .meal-badge.vege { color: var(--olive); }
+
+    .meal-body { padding: 1rem 1.25rem 1.25rem; flex: 1; display: flex; flex-direction: column; }
+    .meal-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .meal-country {
+      font-size: 0.68rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--warm-gray);
+    }
+
+    .meal-name {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 1.2;
+      margin-bottom: 7px;
+    }
+    .meal-desc {
+      font-size: 0.77rem;
+      color: var(--warm-gray);
+      line-height: 1.5;
+      flex: 1;
+      margin-bottom: 1rem;
+    }
+
+    .meal-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .meal-price {
+      font-family: var(--font-display);
+      font-size: 1.2rem; font-weight: 700;
+      color: var(--terracotta);
+    }
+    .meal-price small { font-family: var(--font-body); font-size: 0.7rem; color: var(--warm-gray); font-weight: 400; }
+
+    .btn-detail {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.72rem; font-weight: 600;
+      color: var(--terracotta);
+      background: rgba(196,98,45,0.08);
+      padding: 6px 12px; border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-detail:hover { background: rgba(196,98,45,0.16); }
+
+    /* List view */
+    .meals-grid.list-view {
+      grid-template-columns: 1fr;
+    }
+    .meals-grid.list-view .meal-card {
+      flex-direction: row;
+    }
+    .meals-grid.list-view .meal-image {
+      width: 140px;
+      height: auto;
+      flex-shrink: 0;
+      border-radius: 0;
+    }
+    .meals-grid.list-view .meal-desc { display: none; }
+
+    /* ─── EMPTY STATE ───────────────────── */
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .empty-state-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .empty-state h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .empty-state p { color: var(--warm-gray); font-size: 0.88rem; }
+
+    /* ─── PAGINATION ────────────────────── */
+    .pagination {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin-top: 3rem;
+    }
+    .page-btn {
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 10px; border: 1.5px solid var(--border);
+      background: white; font-size: 0.82rem; font-weight: 500;
+      color: var(--charcoal); cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .page-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
+    .page-btn.active { background: var(--terracotta); border-color: var(--terracotta); color: white; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .meal-card:nth-child(2) { animation-delay: 0.05s; }
+    .meal-card:nth-child(3) { animation-delay: 0.1s; }
+    .meal-card:nth-child(4) { animation-delay: 0.15s; }
+    .meal-card:nth-child(5) { animation-delay: 0.2s; }
+    .meal-card:nth-child(6) { animation-delay: 0.25s; }
+
+    @media (max-width: 960px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .meals-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .meals-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  {% set metadata = {"pagename": "repas"} %}
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="{{ url_for('index') }}">Accueil</a>
+      <i class="bi bi-chevron-right"></i>
+      <span>Les repas</span>
+    </div>
+    <h1 class="page-title">Tous nos <em>repas</em></h1>
+    <p class="page-subtitle">
+      {{ repas_list | default([]) | length or '120' }} plats authentiques de {{ pays_count | default('32') }} pays —
+      filtrez par cuisine, prix ou régime.
+    </p>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- Prix -->
+      <form method="GET" action="" id="filter-form">
+        <div class="filter-card">
+          <div class="filter-title">Prix maximum</div>
+          <input
+            type="range" class="price-slider"
+            name="prix_max" min="5" max="60" step="1"
+            value="{{ request.args.get('prix_max', 60) }}"
+            oninput="document.getElementById('prix-val').textContent = this.value + '€'"
+          />
+          <div class="price-labels">
+            <span>5€</span>
+            <span id="prix-val">{{ request.args.get('prix_max', 60) }}€</span>
+          </div>
+        </div>
+
+        <!-- Pays -->
+        <div class="filter-card">
+          <div class="filter-title">Pays / Cuisine</div>
+          <div class="filter-options">
+            {% set pays_list = [
+              ("🇫🇷", "France", 24),
+              ("🇮🇹", "Italie", 18),
+              ("🇲🇦", "Maroc", 15),
+              ("🇯🇵", "Japon", 20),
+              ("🇻🇳", "Vietnam", 12),
+              ("🇲🇽", "Mexique", 10),
+            ] %}
+            {% for flag, name, count in pays_list %}
+            <label class="filter-option">
+              <input type="checkbox" name="pays" value="{{ name }}"
+                {% if name in request.args.getlist('pays') %}checked{% endif %} />
+              <span class="filter-option-flag">{{ flag }}</span>
+              <span>{{ name }}</span>
+              <span class="filter-option-count">{{ count }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Végétarien -->
+        <div class="filter-card">
+          <div class="vege-toggle">
+            <span class="vege-label">🌿 Végétarien seulement</span>
+            <label class="toggle-switch">
+              <input type="checkbox" name="vegetarien" value="1"
+                {% if request.args.get('vegetarien') %}checked{% endif %}
+                onchange="document.getElementById('filter-form').submit()" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="filter-card" style="padding:1rem;">
+          <button type="submit" style="
+            width:100%; padding:10px; border-radius:10px;
+            background: var(--terracotta); color:white; border:none;
+            font-family: var(--font-body); font-size:0.82rem; font-weight:600;
+            cursor:pointer; margin-bottom:8px; transition: background 0.2s;
+          ">
+            <i class="bi bi-funnel-fill"></i> Appliquer les filtres
+          </button>
+          <a href="" class="btn-reset" style="display:block;text-align:center;text-decoration:none;padding:10px;border-radius:10px;border:1.5px solid var(--border);font-size:0.8rem;color:var(--warm-gray);">
+            Réinitialiser
+          </a>
+        </div>
+      </form>
+
+    </aside>
+
+    <!-- CONTENT -->
+    <main>
+      <div class="content-top">
+        <div class="results-info">
+          <strong>{{ repas_list | default([]) | length or '120' }}</strong> repas trouvés
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <select class="sort-select" onchange="window.location.search='?tri='+this.value">
+            <option value="nom">Trier par nom</option>
+            <option value="prix_asc" {% if request.args.get('tri') == 'prix_asc' %}selected{% endif %}>Prix croissant</option>
+            <option value="prix_desc" {% if request.args.get('tri') == 'prix_desc' %}selected{% endif %}>Prix décroissant</option>
+          </select>
+          <div class="view-toggle">
+            <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="Vue grille">
+              <i class="bi bi-grid"></i>
+            </button>
+            <button class="view-btn" id="btn-list" onclick="setView('list')" title="Vue liste">
+              <i class="bi bi-list-ul"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active filters -->
+      {% if request.args.get('vegetarien') or request.args.getlist('pays') %}
+      <div class="active-filters">
+        {% if request.args.get('vegetarien') %}
+        <span class="filter-tag">🌿 Végétarien <button onclick="removeFilter('vegetarien')">✕</button></span>
+        {% endif %}
+        {% for p in request.args.getlist('pays') %}
+        <span class="filter-tag">{{ p }} <button onclick="removeFilter('pays','{{ p }}')">✕</button></span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Meals Grid -->
+      <div class="meals-grid" id="meals-grid">
+
+        {% for repas in repas_list | default([]) %}
+        <div class="meal-card">
+          <div class="meal-image">
+            🍽️
+            {% if repas.vegetarien %}
+            <span class="meal-badge vege">🌿 Végé</span>
+            {% endif %}
+          </div>
+          <div class="meal-body">
+            <div class="meal-meta">
+              <span class="meal-country">{{ repas.pays }}</span>
+            </div>
+            <div class="meal-name">{{ repas.nom }}</div>
+            <p class="meal-desc">{{ repas.description[:90] if repas.description else '' }}…</p>
+            <div class="meal-footer">
+              <div class="meal-price">{{ repas.prix }}€ <small>/ pers.</small></div>
+              <a href="" class="btn-detail">
+                Voir <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <!-- Exemples -->
+        {% for item in [
+          ("🫕","Tajine d'agneau","Maroc","Mijoté aux épices douces, pruneaux et amandes.",True,18.50),
+          ("🍜","Phở Bò","Vietnam","Bouillon parfumé avec vermicelles de riz.",False,12.90),
+          ("🥘","Risotto Funghi","Italie","Riz crémeux aux champignons sauvages.",True,14.00),
+          ("🍕","Pizza Napolitaine","Italie","Pâte fine, tomate San Marzano, mozzarella.",True,11.50),
+          ("🍣","Sushi Omakase","Japon","Sélection du chef, poissons du jour.",False,24.00),
+          ("🌮","Tacos al Pastor","Mexique","Porc mariné, ananas, coriandre fraîche.",False,9.90),
+        ] %}
+        <div class="meal-card">
+          <div class="meal-image">{{ item[0] }}
+            {% if item[4] %}<span class="meal-badge vege">🌿 Végé</span>{% endif %}
+          </div>
+          <div class="meal-body">
+            <div class="meal-meta">
+              <span class="meal-country">{{ item[2] }}</span>
+            </div>
+            <div class="meal-name">{{ item[1] }}</div>
+            <p class="meal-desc">{{ item[3] }}</p>
+            <div class="meal-footer">
+              <div class="meal-price">{{ item[5] }}€ <small>/ pers.</small></div>
+              <a href="#" class="btn-detail">Voir <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% endfor %}
+
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <a href="?page=1" class="page-btn"><i class="bi bi-chevron-left"></i></a>
+        {% for p in range(1, 6) %}
+        <a href="?page={{ p }}" class="page-btn {{ 'active' if p == (request.args.get('page', 1) | int) else '' }}">{{ p }}</a>
+        {% endfor %}
+        <a href="?page=2" class="page-btn"><i class="bi bi-chevron-right"></i></a>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    function setView(v) {
+      const grid = document.getElementById('meals-grid');
+      const btnGrid = document.getElementById('btn-grid');
+      const btnList = document.getElementById('btn-list');
+      if (v === 'list') {
+        grid.classList.add('list-view');
+        btnList.classList.add('active'); btnGrid.classList.remove('active');
+      } else {
+        grid.classList.remove('list-view');
+        btnGrid.classList.add('active'); btnList.classList.remove('active');
+      }
+    }
+
+    function removeFilter(name, val) {
+      const url = new URL(window.location);
+      if (val) {
+        const vals = url.searchParams.getAll(name).filter(v => v !== val);
+        url.searchParams.delete(name);
+        vals.forEach(v => url.searchParams.append(name, v));
+      } else {
+        url.searchParams.delete(name);
+      }
+      window.location = url;
+    }
+  </script>
+
+</body>
+</html>
