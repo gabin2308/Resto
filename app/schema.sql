@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS plats;
+CREATE TABLE plats(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom TEXT NOT NULL,
+    description TEXT NOT NULL,
+    pays TEXT NOT NULL,
+    vegetarien BOOLEAN NOT NULL,
+    prix REAL NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

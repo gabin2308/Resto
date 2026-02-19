@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saveurs&amp;Co — Accueil</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"/>
+</head>
+<body>
+
+  <!-- ─── NAVBAR ─────────────────────────── -->
+  {% set metadata = {"pagename": "index"} %}
+ 
+
+  <!-- ══════════════════════════════════════
+       HERO
+  ══════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-left">
+
+      <!-- 1. Accroche -->
+      <span class="hero-eyebrow">Cuisine du Monde</span>
+
+      <h1 class="hero-title">
+        Découvrez les<br>
+        <em>saveurs</em> qui<br>
+        vous ressemblent
+      </h1>
+
+      <p class="hero-desc">
+        Explorez notre sélection de repas authentiques du monde entier —
+        des plats familiaux aux spécialités végétariennes.
+      </p>
+
+      <!-- 2. Barre de recherche -->
+      <form class="search-bar" action="/repas" method="POST" role="search">
+        <div class="search-inner">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            type="search"
+            name="repas_name"
+            class="search-input"
+            list="repas-suggestions"
+            placeholder="Rechercher un plat, un pays, un ingrédient…"
+            autocomplete="off"
+          />
+          <datalist id="repas-suggestions">
+            {% for r in repas %}
+              <option value="{{ r.nom }}">
+            {% endfor %}
+          </datalist>
+          <button type="submit" class="search-btn">
+            <i class="bi bi-search"></i> Rechercher
+          </button>
+        </div>
+
+        <!-- Suggestions populaires -->
+        {% for r in repas %}
+    <!--   <div class="search-suggestions">
+          <span class="search-suggestion-label">Populaire :</span>
+          <a href="{{ url_for('index') }}?q=Tajine"     class="search-chip">{{ r.nom }}</a>
+          <a href="{{ url_for('index') }}?q=Sushi"      class="search-chip">Sushi</a>
+          <a href="{{ url_for('index') }}?q=Végétarien" class="search-chip">Végétarien</a>
+          <a href="{{ url_for('index') }}?q=Pâtes"      class="search-chip">Pâtes</a>
+        </div>
+        {% endfor %} --> 
+      </form>
+
+      <!-- 3. Filtres rapides -->
+      <div class="filter-panel">
+        <div class="filter-panel-header">
+          <span class="filter-panel-label">
+            <i class="bi bi-sliders2"></i> Filtrer par
+          </span>
+          <button class="filter-reset-btn" onclick="resetFilters()">
+            <i class="bi bi-x-circle"></i> Réinitialiser
+          </button>
+        </div>
+
+        <div class="filter-groups">
+
+          <!-- Pays -->
+          <div class="filter-group">
+            <div class="filter-group-title">🌍 Pays</div>
+            <div class="filter-chips">
+            
+            {% for r in repas_pays %}
+              <button class="filter-chip-btn"
+                      data-group="pays"
+                      data-value="{{ r.pays }}"
+                      onclick="toggleFilter(this, false)">
+                  {{ r.pays }}
+              </button>
+            {% endfor %}
+            </div>
+          </div>
+
+          <!-- Prix max -->
+          <div class="filter-group">
+            <div class="filter-group-title">💶 Prix max</div>
+            <div class="filter-chips">
+              {% for label, val in [("< 10€","10"), ("< 15€","15"), ("< 25€","25"), ("Tous","60")] %}
+              <button class="filter-chip-btn"
+                      data-group="prix"
+                      data-value="{{ val }}"
+                      onclick="toggleFilter(this, true)">
+                {{ label }}
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Régime -->
+          <div class="filter-group">
+            <div class="filter-group-title">🥗 Régime</div>
+            <div class="filter-chips">
+              <button class="filter-chip-btn"
+                      data-group="regime" data-value="1"
+                      onclick="toggleFilter(this, true)">
+                🌿 Végétarien
+              </button>
+              <button class="filter-chip-btn active"
+                      data-group="regime" data-value="0"
+                      onclick="toggleFilter(this, true)">
+                🍖 Tous
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="filter-apply-btn" onclick="applyFilters()">
+          <i class="bi bi-funnel-fill"></i> Voir les résultats
+        </button>
+      </div>
+
+      <!-- 4. Boutons d'action -->
+      <div class="hero-actions">
+        <a href="" class="btn-primary">
+          <i class="bi bi-grid-fill"></i> Explorer les repas
+        </a>
+        <a href="" class="btn-secondary">
+          <i class="bi bi-leaf"></i> Végétarien
+        </a>
+      </div>
+
+      <!-- 5. Statistiques -->
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-value">{{ repas_count | default('120') }}+</div>
+          <div class="stat-label">Plats</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ pays_count | default('32') }}</div>
+          <div class="stat-label">Pays</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ vege_count | default('48') }}</div>
+          <div class="stat-label">Végétariens</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Mosaïque désactivée — décommenter pour réactiver -->
+    <!--
+    <div class="hero-right">
+      <div class="hero-mosaic">
+        <div class="mosaic-row">
+          <div class="mosaic-cell" style="background:#2a2318;">
+            <span class="mosaic-emoji">🫕</span>
+            <span class="mosaic-tag">🇲🇦 Maroc</span>
+          </div>
+          <div class="mosaic-cell" style="background:#1e2520;">
+            <span class="mosaic-emoji" style="font-size:3.5rem;">🍜</span>
+            <span class="mosaic-tag">🇻🇳 Vietnam</span>
+          </div>
+        </div>
+        <div class="mosaic-row">
+          <div class="mosaic-cell" style="background:#211e26;">
+            <span class="mosaic-emoji" style="font-size:3.5rem;">🍣</span>
+            <span class="mosaic-tag">🇯🇵 Japon</span>
+          </div>
+          <div class="mosaic-cell" style="background:#261e1a;">
+            <span class="mosaic-emoji">🍕</span>
+            <span class="mosaic-tag">🇮🇹 Italie</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    -->
+
+  </section>
+
+  <!-- ══════════════════════════════════════
+       CUISINES DU MONDE
+  ══════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Cuisines du <em>monde</em></h2>
+      <a href="" class="section-link">
+        Tout voir <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="categories-grid">
+      {% set cats = [
+        ("🇫🇷", "France", "24 plats", "France"),
+        ("🇮🇹", "Italie", "18 plats", "Italie"),
+        ("🇲🇦", "Maroc",  "15 plats", "Maroc"),
+        ("🇯🇵", "Japon",  "20 plats", "Japon"),
+      ] %}
+      {% for flag, name, count, pays_param in cats %}
+      <a href="" class="category-card">
+        <span class="category-emoji">{{ flag }}</span>
+        <span class="category-name">{{ name }}</span>
+        <span class="category-count">{{ count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="section-divider"><hr /></div>
+
+  <!-- ══════════════════════════════════════
+       REPAS À LA UNE
+  ══════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">À la <em>une</em> aujourd'hui</h2>
+      <a href="" class="section-link">
+        Tous les repas <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="meals-grid">
+
+      {% for repas in repas_vedettes | default([]) %}
+      <a href="" class="meal-card">
+        <div class="meal-image">
+          <span class="meal-emoji">🍽️</span>
+          {% if repas.vegetarien %}
+            <span class="meal-badge vege">🌿 Végé</span>
+          {% endif %}
+          <span class="meal-country-tag">{{ repas.pays }}</span>
+        </div>
+        <div class="meal-body">
+          <div class="meal-name">{{ repas.nom }}</div>
+          <p class="meal-desc">{{ repas.description[:100] }}…</p>
+          <div class="meal-footer">
+            <div class="meal-price">{{ repas.prix }}€ <small>/ pers.</small></div>
+            <span class="meal-btn">Voir <i class="bi bi-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+
+      {% else %}
+      {# Données d'exemple si la DB est vide #}
+      {% for item in [
+        ("🫕","Tajine d'agneau","Maroc","Mijoté aux épices douces, pruneaux confits et amandes dorées.",True,"18.50"),
+        ("🍜","Phở Bò","Vietnam","Bouillon parfumé à l'anis étoilé, vermicelles et lamelles de bœuf.",False,"12.90"),
+        ("🥘","Risotto Funghi","Italie","Riz crémeux aux champignons sauvages et parmesan affiné 24 mois.",True,"14.00"),
+      ] %}
+      <div class="meal-card">
+        <div class="meal-image">
+          <span class="meal-emoji">{{ item[0] }}</span>
+          {% if item[4] %}<span class="meal-badge vege">🌿 Végé</span>{% endif %}
+          <span class="meal-country-tag">{{ item[2] }}</span>
+        </div>
+        <div class="meal-body">
+          <div class="meal-name">{{ item[1] }}</div>
+          <p class="meal-desc">{{ item[3] }}</p>
+          <div class="meal-footer">
+            <div class="meal-price">{{ item[5] }}€ <small>/ pers.</small></div>
+            <a href="" class="meal-btn">Voir <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endfor %}
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       BANNER VÉGÉTARIEN
+  ══════════════════════════════════════ -->
+  <div class="banner-wrap">
+    <div class="banner">
+      <div class="banner-content">
+        <div class="banner-eyebrow">Sélection spéciale</div>
+        <div class="banner-title">
+          Cuisiner autrement,<br>
+          manger <em>végétarien</em>
+        </div>
+        <p class="banner-sub">
+          Découvrez notre sélection de plats 100 % végétaux, savoureux et colorés.
+        </p>
+      </div>
+      <a href="" class="banner-btn">
+        🌿 Voir la sélection <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════ -->
+  <footer>
+    <div class="footer-brand">Saveurs&amp;Co</div>
+    <div>© 2025 — Cuisine du Monde</div>
+    <nav class="footer-links">
+      <a href="{{ url_for('index') }}">Accueil</a>
+      <a href="">Les repas</a>
+    </nav>
+  </footer>
+
+  <!-- ══════════════════════════════════════
+       JAVASCRIPT — Filtres
+  ══════════════════════════════════════ -->
+  <script>
+    function toggleFilter(btn, exclusive) {
+      const group = btn.dataset.group;
+      if (exclusive) {
+        document.querySelectorAll('[data-group="' + group + '"]')
+          .forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      } else {
+        btn.classList.toggle('active');
+      }
+      updateResetBtn();
+    }
+
+    function updateResetBtn() {
+      const any = document.querySelector('.filter-chip-btn.active');
+      document.querySelector('.filter-reset-btn').style.opacity = any ? '1' : '0.4';
+    }
+
+    function resetFilters() {
+      document.querySelectorAll('.filter-chip-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('[data-value="0"]').forEach(b => b.classList.add('active'));
+      updateResetBtn();
+    }
+
+    function applyFilters() {
+      const url = new URL('', window.location.origin);
+      document.querySelectorAll('.filter-chip-btn.active').forEach(btn => {
+        const group = btn.dataset.group;
+        const val   = btn.dataset.value;
+        if (group === 'pays')                  url.searchParams.append('pays', val);
+        if (group === 'prix' && val !== '60')  url.searchParams.set('prix_max', val);
+        if (group === 'regime' && val === '1') url.searchParams.set('vegetarien', '1');
+      });
+      window.location = url;
+    }
+  </script>
+
+</body>
+</html>
