@@ -1,19 +1,81 @@
 {% extends 'layout.html' %}
 {% block content %}
-
 <main class="main-content">
     <div class="container">
         <h1>Nos Délicieux Repas</h1>
 
-        <form method="GET" action="{{ url_for('categorie') }}">
-            <div class="filters">
-                <button class="filter-btn {% if not request.args.get('cat') %}active{% endif %}" name="cat" value="tous">Tous</button>
-                <button class="filter-btn {% if request.args.get('cat') == 'Entrées' %}active{% endif %}" name="cat" value="Entrées">Entrées</button>
-                <button class="filter-btn {% if request.args.get('cat') == 'Plats principaux' %}active{% endif %}" name="cat" value="Plats principaux">Plats principaux</button>
-                <button class="filter-btn {% if request.args.get('cat') == 'Desserts' %}active{% endif %}" name="cat" value="Desserts">Desserts</button>
+        {# ── Barre de recherche par nom ── #}
+        <form method="GET" action="{{ url_for('recherche') }}">
+            <div class="search-bar">
+                <input type="text" name="search"
+                       value="{{ request.args.get('search', '') }}"
+                       placeholder="🔍 Rechercher un repas..."
+                       list="suggestion_name"
+                       class="search-input">
+                    <datalist id="suggestion_name">
+                        {% for r in repas%}
+                            <option value="{{r.nom}}">
+                        {% endfor %}
+                    </datalist>
+                <button type="submit" class="btn btn-primary search-btn">
+                    Rechercher
+                </button>
+                {% if request.args.get('search') %}
+                <a href="{{ url_for('categorie') }}" class="btn-reset">✕ Réinitialiser</a>
+                {% endif %}
             </div>
         </form>
 
+        {# ── Recherche par prix ── #}
+        <form method="GET" action="{{ url_for('prix') }}">
+            <div class="search-bar">
+                <div class="prix-range">
+                    <label class="quantite-label">Prix max</label>
+                    <input type="number" name="prix_max"
+                           value="{{ request.args.get('prix_max', '') }}"
+                           placeholder="€" min="0" step="0.5"
+                           class="prix-input">
+                </div>
+                <button type="submit" class="btn btn-primary search-btn">
+                    Filtrer
+                </button>
+                {% if request.args.get('prix_max') %}
+                <a href="{{ url_for('categorie') }}" class="btn-reset">✕ Réinitialiser</a>
+                {% endif %}
+            </div>
+        </form>
+
+        {# ── Filtres catégorie — chaque bouton dans son form ── #}
+        <div class="filters">
+            <form method="GET" action="{{ url_for('categorie') }}">
+                <button class="filter-btn {% if not request.args.get('cat') %}active{% endif %}"
+                        name="cat" value="tous">Tous</button>
+            </form>
+            <form method="GET" action="{{ url_for('categorie') }}">
+                <button class="filter-btn {% if request.args.get('cat') == 'Entrées' %}active{% endif %}"
+                        name="cat" value="Entrées">Entrées</button>
+            </form>
+            <form method="GET" action="{{ url_for('categorie') }}">
+                <button class="filter-btn {% if request.args.get('cat') == 'Plats principaux' %}active{% endif %}"
+                        name="cat" value="Plats principaux">Plats principaux</button>
+            </form>
+            <form method="GET" action="{{ url_for('categorie') }}">
+                <button class="filter-btn {% if request.args.get('cat') == 'Desserts' %}active{% endif %}"
+                        name="cat" value="Desserts">Desserts</button>
+            </form>
+        </div>
+
+        {# ── Résultats vides ── #}
+        {% if repas|length == 0 %}
+        <div class="search-vide">
+            <p>🍽️ Aucun repas trouvé pour votre recherche.</p>
+            <a href="{{ url_for('categorie') }}" class="btn btn-primary">
+                Voir tous les repas
+            </a>
+        </div>
+        {% endif %}
+
+        {# ── Grille repas ── #}
         <div class="meals-grid">
             {% for r in repas %}
                 {% set repasname = r.nom|lower|replace(" ", "_") %}
@@ -34,16 +96,17 @@
 
                         <p>{{ r.description }}</p>
                         <div class="meal-price">{{ r.prix }} €</div>
-                        <form method="POST" action="{{url_for('ajouter')}}">
+
+                        {# ── Formulaire ajout panier ── #}
+                        <form method="POST" action="{{ url_for('ajouterPanier') }}">
                             <input type="hidden" name="id"   value="{{ r.id }}">
                             <input type="hidden" name="nom"  value="{{ r.nom }}">
                             <input type="hidden" name="prix" value="{{ r.prix }}">
 
-                            {# ── Quantité ── #}
                             <div class="quantite-wrapper">
                                 <label class="quantite-label" for="quantite_{{ r.id }}">Qté</label>
                                 <input type="number" name="quantite" id="quantite_{{ r.id }}"
-                                    value="1" min="1" max="{{r.quantite}}" class="quantite-input">
+                                       value="1" min="1" max="{{ r.quantite }}" class="quantite-input">
                             </div>
 
                             <button type="submit" class="btn btn-primary"
@@ -55,6 +118,7 @@
                                 {% endif %}
                             </button>
                         </form>
+
                     </div>
                 </div>
             {% endfor %}
@@ -68,5 +132,4 @@
         <p>&copy; 2024 Restaurant. Tous droits réservés.</p>
     </div>
 </footer>
-
 {% endblock %}
