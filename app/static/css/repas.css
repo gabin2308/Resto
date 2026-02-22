@@ -24,12 +24,99 @@
     border-radius: 2px;
 }
 
+/* ── Barre de recherche ── */
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* ── Recherche par prix ── */
+.prix-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prix-input {
+    width: 80px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem;
+    text-align: center;
+    transition: border-color 0.2s;
+}
+
+.prix-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.search-btn {
+    padding: 0.6rem 1.5rem;
+    white-space: nowrap;
+}
+
+.btn-reset {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+}
+
+.btn-reset:hover {
+    color: #dc5050;
+    border-color: #dc5050;
+}
+
+.search-vide {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
 /* ── Filtres ── */
 .filters {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
-    margin: 2.5rem 0;
+    margin: 1.5rem 0 2.5rem;
 }
 
 .filter-btn {
@@ -67,6 +154,17 @@
     gap: 1.75rem;
 }
 
+/* ── Carte repas ── */
+.meal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
 .meal-card:hover {
     transform: translateY(-5px);
     border-color: var(--accent);
@@ -86,12 +184,29 @@
     filter: brightness(0.96) saturate(1.05);
 }
 
+/* ── Infos repas ── */
+.meal-info {
+    padding: 1.4rem 1.5rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
 .meal-info h3 {
     font-family: 'Playfair Display', serif;
     font-size: 1.15rem;
     font-weight: 500;
     color: var(--text);
     margin-bottom: 0.5rem;
+}
+
+.meal-info p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+    margin-bottom: 1.1rem;
+    flex: 1;
 }
 
 .meal-price {
@@ -110,49 +225,16 @@
     font-size: 0.8rem;
 }
 
-/* ════════════════════════════════
-   RESPONSIVE REPAS
-   ════════════════════════════════ */
-@media (max-width: 640px) {
-    .main-content {
-        padding: 2.5rem 0 4rem;
-    }
-
-    .meals-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .filters {
-        gap: 0.4rem;
-    }
-}
-/* ── Carte repas ── */
-.meal-card {
+/* ── Bouton désactivé ── */
+.btn:disabled {
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;               
-    flex-direction: column;      
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-}
-
-/* ── Infos repas ── */
-.meal-info {
-    padding: 1.4rem 1.5rem 1.6rem;
-    display: flex;                
-    flex-direction: column;      
-    flex: 1;                      
-}
-
-.meal-info p {
-    font-size: 0.875rem;
+    border-color: var(--border);
     color: var(--text-muted);
-    line-height: 1.65;
-    font-weight: 300;
-    margin-bottom: 1.1rem;
-    flex: 1;                     
+    cursor: not-allowed;
+    transform: none;
 }
+
+/* ── Quantité ── */
 .quantite-wrapper {
     display: flex;
     align-items: center;
@@ -185,4 +267,62 @@
 .quantite-input:focus {
     outline: none;
     border-color: var(--accent);
+}
+
+/* ── Statut badges ── */
+.statut-badge {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.7rem;
+    border-radius: 100px;
+    margin-bottom: 0.75rem;
+}
+
+.statut-badge.disponible {
+    background: rgba(74, 180, 120, 0.12);
+    color: #4ab478;
+    border: 1px solid rgba(74, 180, 120, 0.3);
+}
+
+.statut-badge.indisponible {
+    background: rgba(220, 80, 80, 0.1);
+    color: #dc5050;
+    border: 1px solid rgba(220, 80, 80, 0.25);
+}
+
+/* ════════════════════════════════
+   RESPONSIVE REPAS
+   ════════════════════════════════ */
+@media (max-width: 640px) {
+    .main-content {
+        padding: 2.5rem 0 4rem;
+    }
+
+    .meals-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        gap: 0.4rem;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input {
+        min-width: unset;
+    }
+
+    .prix-range {
+        justify-content: space-between;
+    }
+
+    .search-btn {
+        width: 100%;
+    }
 }
