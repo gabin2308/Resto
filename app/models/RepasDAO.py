@@ -79,14 +79,14 @@ class RepasSqliteDAO(RepasDAOInterface):
     def __init__(self):
         self.databasename = current_app.root_path + "/database.db"
 
-    def getDbconnection(self):
+    def _getDbconnection(self):
 
         connection = sqlite3.connect(self.databasename)
         connection.row_factory = sqlite3.Row
         return connection
     
     def findAll(self):
-        connection = self.getDbconnection()
+        connection = self._getDbconnection()
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM repas")
         rows = cursor.fetchall()
@@ -98,7 +98,7 @@ class RepasSqliteDAO(RepasDAOInterface):
         return repas_list
     
     def findByNom(self, nom):
-        connection = self.getDbconnection()
+        connection = self._getDbconnection()
 
         cursor = connection.cursor()
 
@@ -110,7 +110,7 @@ class RepasSqliteDAO(RepasDAOInterface):
         return  [Repas(dict(row)) for row in rows]
     
     def findByPrix(self, prix):
-        connection = self.getDbconnection()
+        connection = self._getDbconnection()
         cursor = connection.cursor()
         query = "SELECT * FROM repas WHERE prix <= ?"
         rows = cursor.execute(query, (prix,)).fetchall()
@@ -118,7 +118,7 @@ class RepasSqliteDAO(RepasDAOInterface):
         return [Repas(dict(row)) for row in rows]
     
     def findByCategorie(self, categorie):
-        connection = self.getDbconnection()
+        connection = self._getDbconnection()
         cursor = connection.cursor()
         query = "SELECT * FROM repas WHERE categorie = ?"
         rows = cursor.execute(query, (categorie,)).fetchall()
@@ -126,10 +126,11 @@ class RepasSqliteDAO(RepasDAOInterface):
         return [Repas(dict(row)) for row in rows]
     
     def findByStatut(self, statut):
-        connection = self.getDbconnection()
+        connection = self._getDbconnection()
         cursor = connection.cursor()
         query = "SELECT * FROM repas WHERE statut = ?"
         rows = cursor.execute(query, (statut,)).fetchall()
         connection.close()
         return [Repas(dict(row)) for row in rows]
+    
     
