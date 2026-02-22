@@ -4,7 +4,7 @@ from app.services.PanierService import PanierService
 
 class PanierController:
 
-    @staticmethod
+    
     @app.route('/panier', methods=['GET'])
     def panier():
         ps = PanierService()
@@ -16,32 +16,32 @@ class PanierController:
                                panier_count=p.count,
                                metadata=metadata)
 
-    @staticmethod
+    
     @app.route('/panier/ajouter', methods=['POST'])
-    def ajouter():
+    def ajouterPanier():
         ps = PanierService()
         id       = int(request.form.get('id'))
         nom      = request.form.get('nom')
         prix     = float(request.form.get('prix'))
         quantite = int(request.form.get('quantite', 1))
-        ps.ajouter(id, nom, prix, quantite)
+        ps.ajouterRepas(id, nom, prix, quantite)
         return redirect(url_for('categorie'))
 
-    @staticmethod
+    
     @app.route('/panier/supprimer/<int:id>', methods=['POST'])
     def supprimerPanier(id):
         ps = PanierService()
-        ps.supprimer(id)
+        ps.supprimerRepas(id)
         return redirect(url_for('panier'))
 
-    @staticmethod
+    
     @app.route('/panier/vider', methods=['POST'])
     def viderPanier():
         ps = PanierService()
-        ps.vider()
+        ps.viderPanier()
         return redirect(url_for('panier'))
 
-    @staticmethod
+    
     @app.route('/panier/commander', methods=['GET'])
     def passerCommande():
         ps = PanierService()
@@ -51,6 +51,3 @@ class PanierController:
                                panier=p.items,
                                panier_total=p.total,
                                metadata=metadata)
-    
-
- 
