@@ -57,10 +57,10 @@ class CommandesSqliteDAO(CommandesDAOInterface):
     def findAllCommande(self):
         connection = self._getDbConnection()
         cursor = connection.cursor()
-        rows = cursor.execute("SELECT * FROM commandes").fetchall()  # ✅ fetchall
+        rows = cursor.execute("SELECT * FROM commandes").fetchall()  
         connection.close()
         resultat = []
-        for row in rows:                                             # ✅ boucle
+        for row in rows:                                             
             resultat.append(Commandes({
                 'id'    : row['id'],
                 'date'  : row['date'],
