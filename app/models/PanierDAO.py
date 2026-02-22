@@ -88,7 +88,7 @@ class PanierSqliteDAO(PanierDAOInterface):
             }))
         return resultat
 
-    def ajouter(self, id, nom, prix, quantite):
+    def ajouterRepas(self, id, nom, prix, quantite):
         connection = self._getDbConnection()
         cursor = connection.cursor()
 
@@ -131,7 +131,7 @@ class PanierSqliteDAO(PanierDAOInterface):
         connection.commit()
         connection.close()
 
-    def supprimer(self, id):
+    def supprimerRepas(self, id):
         connection = self._getDbConnection()
         cursor = connection.cursor()
 
@@ -157,7 +157,7 @@ class PanierSqliteDAO(PanierDAOInterface):
         connection.commit()
         connection.close()
 
-    def vider(self):
+    def viderPanier(self):
         connection = self._getDbConnection()
         cursor = connection.cursor()
         cursor.execute("DELETE FROM paniers")  
