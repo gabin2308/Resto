@@ -17,6 +17,12 @@ class CommandesService:
             return res
         return [{}]
     
+    def getByStatut(self, statut):
+        res = self.cdao.findByStatut(statut)
+        if len(res) > 0:
+            return res
+        return []
+    
     def ajouter(self,date, items,total, statut ):
         commande = {
             "date": date,

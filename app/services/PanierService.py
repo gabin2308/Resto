@@ -21,14 +21,14 @@ class PanierService:
             return res
         return 0
 
-    def ajouter(self, id, nom, prix, quantite):
-        self.pdao.ajouter(id, nom, prix, quantite)
+    def ajouterRepas(self, id, nom, prix, quantite):
+        self.pdao.ajouterRepas(id, nom, prix, quantite)
 
-    def supprimer(self, id):
-        self.pdao.supprimer(id)
+    def supprimerRepas(self, id):
+        self.pdao.supprimerRepas(id)
 
-    def vider(self):
-        self.pdao.vider()
+    def viderPanier(self):
+        self.pdao.viderPanier()
 
     def getPanierByCount(self, count):
         res = self.pdao.findByCount(count)  
