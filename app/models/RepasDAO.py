@@ -17,14 +17,14 @@ class RepasJsonDAO(RepasDAOInterface):
               repas_instances.append(Repas(r))
       return repas_instances
     
-    def findByName(self, name):
+    def findByNom(self, nom):
         import unicodedata
         import re
 
         def normalize(text):
 
             text = unicodedata.normalize('NFD',text)
-            text = ''.join(char for char in text if unicodedata.cathegory(char) != 'Mn')
+            text = ''.join(char for char in text if unicodedata.category(char) != 'Mn')
             text = re.sub(r'[^a-z0-9\s]', '', text.lower())
 
             prefixes_suffixes =[
@@ -33,7 +33,7 @@ class RepasJsonDAO(RepasDAOInterface):
             words = text.split()
             words = [word for word in words if word not in prefixes_suffixes]
             return " ".join(words)
-        normalized_name = normalize(name)
+        normalized_name = normalize(nom)
         for repas in self.repas:
             for r in repas:
                 if normalize(r["nom"]) == normalized_name:
@@ -42,11 +42,11 @@ class RepasJsonDAO(RepasDAOInterface):
     
 
     
-    def findByPays(self, pays):
+    def findByCategorie(self, c):
         repas_found = []
         for repas in self.repas:
             for r in repas:
-                if r.get("pays", "").lower() == pays.lower():
+                if r.get("categorie", "").lower() == c.lower():
                     repas_found.append(Repas(r))
         return repas_found
     
@@ -57,6 +57,22 @@ class RepasJsonDAO(RepasDAOInterface):
                 if r.get("prix", 0) <= prix:
                     repas_found.append(Repas(r))
         return repas_found
+    
+    def findStatut(self, s):
+        repas_found = []
+        for repas in self.repas:
+            for r in repas:
+                if r.get("statut", "").lower()== s.lower():
+                    repas_found.append(Repas(r))
+        return repas_found
+    
+    def findQuatite(self, q):
+        repas_found = []
+        for repas in self.repas:
+            for r in repas:
+                if r.repas("quantité", "") <= q :
+                    repas_found.append(Repas(r))
+
 
 class RepasSqliteDAO(RepasDAOInterface):
 
@@ -72,7 +88,7 @@ class RepasSqliteDAO(RepasDAOInterface):
     def findAll(self):
         connection = self.getDbconnection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM plats")
+        cursor.execute("SELECT * FROM repas")
         rows = cursor.fetchall()
         connection.close()
         repas_list = []
@@ -81,14 +97,14 @@ class RepasSqliteDAO(RepasDAOInterface):
             repas_list.append(repas)
         return repas_list
     
-    def findByName(self, name):
+    def findByNom(self, nom):
         connection = self.getDbconnection()
 
         cursor = connection.cursor()
 
-        query = "SELECT * FROM plats WHERE nom LIKE ?"
+        query = "SELECT * FROM repas WHERE nom LIKE ?"
 
-        rows = cursor.execute(query, (f"%{name}%",)).fetchall()
+        rows = cursor.execute(query, (f"%{nom}%",)).fetchall()
         connection.close()
 
         return  [Repas(dict(row)) for row in rows]
@@ -96,35 +112,24 @@ class RepasSqliteDAO(RepasDAOInterface):
     def findByPrix(self, prix):
         connection = self.getDbconnection()
         cursor = connection.cursor()
-        query = "SELECT * FROM plats WHERE prix <= ?"
+        query = "SELECT * FROM repas WHERE prix <= ?"
         rows = cursor.execute(query, (prix,)).fetchall()
         connection.close()
-        repas_list = []
-        for row in rows:
-            repas = Repas(row["id"], row["nom"], row["description"], row["pays"], row["vegetarien"], row["prix"])
-            repas_list.append(repas)
-        return repas_list
+        return [Repas(dict(row)) for row in rows]
     
-    def findByVegetarien(self, vegetarien):
+    def findByCategorie(self, categorie):
         connection = self.getDbconnection()
         cursor = connection.cursor()
-        query = "SELECT * FROM plats WHERE vegetarien = ?"
-        rows = cursor.execute(query, (vegetarien,)).fetchall()
+        query = "SELECT * FROM repas WHERE categorie = ?"
+        rows = cursor.execute(query, (categorie,)).fetchall()
         connection.close()
-        repas_list = []
-        for row in rows:
-            repas = Repas(row["id"], row["nom"], row["description"], row["pays"], row["vegetarien"], row["prix"])
-            repas_list.append(repas)
-        return repas_list
+        return [Repas(dict(row)) for row in rows]
     
-    def findByPays(self, pays):
+    def findByStatut(self, statut):
         connection = self.getDbconnection()
         cursor = connection.cursor()
-        query = "SELECT * FROM plats WHERE pays = ?"
-        rows = cursor.execute(query, (pays,)).fetchall()
+        query = "SELECT * FROM repas WHERE statut = ?"
+        rows = cursor.execute(query, (statut,)).fetchall()
         connection.close()
-        repas_list = []
-        for row in rows:
-            repas = Repas(row["id"], row["nom"], row["description"], row["pays"], row["vegetarien"], row["prix"])
-            repas_list.append(repas)
-        return repas_list
+        return [Repas(dict(row)) for row in rows]
+    

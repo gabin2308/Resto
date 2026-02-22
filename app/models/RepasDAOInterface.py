@@ -3,15 +3,15 @@ class RepasDAOInterface:
     def findAll(self):
         pass
 
-    def findByName(self, name):
+    def findByNom(self, nom):
         pass
 
     def findByPrix(self, prix):
         pass
 
-    def findByVegetarien(self, vegetarien):
+    def findByCategorie(self, categorie):
         pass    
 
-    def findByPays(self, pays):
+    def findByStatut(self, statut):
         pass
     

@@ -1,83 +1,60 @@
 [
   {
     "id": 1,
-    "nom": "Beignets haricot bouillie",
-    "description": "Beignets de maïs frits servis avec des haricots rouges cuits",
-    "pays": "Cameroun",
-    "vegetarien": true,
-    "prix": 500
+    "nom": "Salade César",
+    "description": "Salade fraîche avec croûtons, parmesan et sauce César",
+    "prix": 12.50,
+    "categorie": "Entrées",
+    "statut": "disponible",
+    "quantite": 20
   },
-  { 
+  {
     "id": 2,
-    "nom": "Ndolè",
-    "description": "Plat national camerounais à base de feuilles de ndolè cuites avec des crevettes et des oignons caramélisés",
-    "pays": "Cameroun",
-    "vegetarien": false,
-    "prix": 800
+    "nom": "Burger Deluxe",
+    "description": "Burger avec steak, fromage, légumes frais et frites",
+    "prix": 15.90,
+    "categorie": "Plats principaux",
+    "statut": "disponible",
+    "quantite": 20
+    
   },
   {
     "id": 3,
-    "nom": "Poulet DG",
-    "description": "Poulet sauté avec des légumes colorés et des tranches de plantain mûr, plat festif et généreux",
-    "pays": "Cameroun",
-    "vegetarien": false,
-    "prix": 1200
-  }
-  ,
+    "nom": "Pizza Margherita",
+    "description": "Pizza traditionnelle avec tomates, mozzarella et basilic",
+    "prix": 13.50,
+    "categorie": "Plats principaux",
+    "statut": "disponible",
+    "quantite": 20
+
+  },
   {
     "id": 4,
-    "nom": "Eru",
-    "description": "Ragoût de feuilles d'eru cuites avec du poisson fumé, des crevettes et des épices, accompagné de fufu ou de garri",
-    "pays": "Cameroun",
-    "vegetarien": false,
-    "prix": 900
+    "nom": "Pâtes Carbonara",
+    "description": "Pâtes fraîches avec lardons, œuf et parmesan",
+    "prix": 14.00,
+    "categorie": "Plats principaux",
+    "statut": "disponible",
+    "quantite": 20
   },
   {
     "id": 5,
-    "nom": "Koki",
-    "description": "Gâteau de haricots noirs cuits à la vapeur dans des feuilles de bananier, souvent servi avec du plantain ou du manioc",
-    "pays": "Cameroun",
-    "vegetarien": true,
-    "prix": 600
+    "nom": "Tiramisu",
+    "description": "Dessert italien traditionnel au café et mascarpone",
+    "prix": 6.50,
+    "categorie": "Desserts",
+    "statut": "disponible",
+    "quantite": 20
+
   },
   {
     "id": 6,
-    "nom": "Mbongo Tchobi",
-    "description": "Ragoût de poisson ou de viande cuit dans une sauce noire épicée à base de graines de mbongo, accompagné de riz ou de plantain",
-    "pays": "Cameroun",
-    "vegetarien": false,
-    "prix": 1100
-  },
-  {
-    "id": 7,
-    "nom": "Achu",
-    "description": "Plat traditionnel du Nord-Ouest du Cameroun composé de pâte de manioc servie avec une sauce jaune épicée à base de piment et d'huile de palme",
-    "pays": "Cameroun",
-    "vegetarien": false,
-    "prix": 700
-  },
-  {
-    "id": 8,
-    "nom": "Fufu",
-    "description": "Pâte lisse et élastique à base de manioc ou d'igname, souvent servie avec des sauces riches en viande ou en légumes",
-    "pays": "Cameroun",
-    "vegetarien": true,
-    "prix": 400
-  },
-  {
-    "id": 9,
-    "nom": "Kedjenou",
-    "description": "Ragoût de poulet ou de viande cuit lentement avec des légumes et des épices dans une marmite scellée, accompagné de riz ou de foutou",
-    "pays": "Cameroun",
-    "vegetarien": false,
-    "prix": 1000
-  },
-  {
-    "id": 10,
-    "nom": "Mbanga Soup",
-    "description": "Soupe à base de pulpe de noix de palme, souvent préparée avec du poisson fumé, des crevettes et des légumes, accompagnée de riz ou de plantain",
-    "pays": "Cameroun",
-    "vegetarien": false,
-    "prix": 850
+    "nom": "Tarte aux pommes",
+    "description": "Tarte maison aux pommes avec crème anglaise",
+    "prix": 5.90,
+    "categorie": "Desserts",
+    "statut": "disponible",
+    "quantite": 20
+    
   }
 ]

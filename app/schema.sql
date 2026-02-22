@@ -1,10 +1,11 @@
-DROP TABLE IF EXISTS plats;
-CREATE TABLE plats(
+DROP TABLE IF EXISTS repas;
+CREATE TABLE repas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nom TEXT NOT NULL,
     description TEXT NOT NULL,
-    pays TEXT NOT NULL,
-    vegetarien BOOLEAN NOT NULL,
     prix REAL NOT NULL,
+    categorie BOOLEAN NOT NULL,
+    statut TEXT NOT NULL DEFAULT disponible,
+    quantite INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

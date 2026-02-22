@@ -7,11 +7,11 @@ class IndexController:
     @app.route('/', methods=['GET'])
     def index():
         rs = RepasService()
-        repas  = rs.getRepasdAll()
-        repas_pays = rs.getAllPays()
+        repas  = rs.getRepasAll()
+        categorie = rs.getAllCategorie()
 
         data = {
-            "pays": list(repas_pays)
+            "categorie": list(categorie)
         }
 
         metadata = {

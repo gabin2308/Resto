@@ -18,7 +18,7 @@ with open(SCHEMA_PATH, encoding="utf-8") as f:
 cur = connection.cursor()
 
 for p in plats:
-    cur.execute("INSERT INTO plats (id,nom, description,pays,vegetarien,prix) VALUES(?,?,?,?,?,?)", (p["id"], p["nom"], p["description"], p["pays"], p["vegetarien"], p["prix"]))
+    cur.execute("INSERT INTO repas (id,nom, description,prix,categorie,statut,quantite) VALUES(?,?,?,?,?,?,?)", (p["id"], p["nom"], p["description"], p["prix"], p["categorie"], p["statut"],p["quantite"]))
 
 
 connection.commit()
