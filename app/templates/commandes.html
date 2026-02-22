@@ -1,51 +1,69 @@
 {% extends 'layout.html' %}
 {% block content %}
-
 <main class="main-content">
     <div class="container">
-
         <h1>Mes Commandes</h1>
 
+        {# ── Filtres par statut ── #}
+        <div class="filters">
+            <form method="GET" action="{{ url_for('statut') }}">
+                <button class="filter-btn {% if not request.args.get('statut') %}active{% endif %}"
+                        name="statut" value="tous">Tous</button>
+            </form>
+            <form method="GET" action="{{ url_for('statut') }}">
+                <button class="filter-btn {% if request.args.get('statut') == 'en attente' %}active{% endif %}"
+                        name="statut" value="en attente">⏳ En attente</button>
+            </form>
+            <form method="GET" action="{{ url_for('statut') }}">
+                <button class="filter-btn {% if request.args.get('statut') == 'en cours' %}active{% endif %}"
+                        name="statut" value="en cours">🍳 En cours</button>
+            </form>
+            <form method="GET" action="{{ url_for('statut') }}">
+                <button class="filter-btn {% if request.args.get('statut') == 'livrée' %}active{% endif %}"
+                        name="statut" value="livrée">✔ Livrée</button>
+            </form>
+           <!-- <form method="GET" action="{{ url_for('statut') }}">
+                <button class="filter-btn {% if request.args.get('statut') == 'annulée' %}active{% endif %}"
+                        name="statut" value="annulée">✕ Annulée</button>
+            </form>-->
+        </div>
+
         {% if commandes and commandes|length > 0 %}
-            <div class="historique-list">
-                {% for commande in commandes %}
-                <div class="historique-card">
-
-                    <div class="historique-header">
-                        <div class="historique-info">
-                            <span class="historique-id">#{{ commande.id }}</span>
-                            <span class="historique-date">{{ commande.date }}</span>
-                        </div>
-                        <span class="statut-badge {{ commande.statut|replace(' ', '-') }}">
-                            {{ commande.statut }}
-                        </span>
+        <div class="historique-list">
+            {% for commande in commandes %}
+            <div class="historique-card">
+                <div class="historique-header">
+                    <div class="historique-info">
+                        <span class="historique-id">#{{ commande.id }}</span>
+                        <span class="historique-date">{{ commande.date }}</span>
                     </div>
-
-                    <div class="historique-items">
-                        {% for item in commande.items %}
-                        <div class="historique-item">
-                            <span>{{ item.nom }} x{{ item.quantite }}</span>
-                            <span>{{ (item.prix * item.quantite)|round(2) }} €</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="historique-total">
-                        <span>Total</span>
-                        <span class="historique-total-prix">{{ commande.total }} €</span>
-                    </div>
-
+                    <span class="statut-badge {{ commande.statut|replace(' ', '-') }}">
+                        {{ commande.statut }}
+                    </span>
                 </div>
-                {% endfor %}
+                <div class="historique-items">
+                    {% for item in commande.items %}
+                    <div class="historique-item">
+                        <span>{{ item.nom }} x{{ item.quantite }}</span>
+                        <span>{{ (item.prix * item.quantite)|round(2) }} €</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="historique-total">
+                    <span>Total</span>
+                    <span class="historique-total-prix">{{ commande.total }} €</span>
+                </div>
             </div>
+            {% endfor %}
+        </div>
 
         {% else %}
-            <div class="historique-vide">
-                <p>🍽️ Vous n'avez pas encore de commandes</p>
-                <a href="{{ url_for('categorie') }}" class="btn btn-primary">
-                    Voir nos repas
-                </a>
-            </div>
+        <div class="historique-vide">
+            <p>🍽️ Aucune commande trouvée</p>
+            <a href="{{ url_for('categorie') }}" class="btn btn-primary">
+                Voir nos repas
+            </a>
+        </div>
         {% endif %}
 
     </div>
@@ -56,5 +74,4 @@
         <p>&copy; 2024 Restaurant. Tous droits réservés.</p>
     </div>
 </footer>
-
 {% endblock %}
