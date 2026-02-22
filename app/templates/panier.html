@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<main class="main-content">
+    <div class="container">
+        <h1>Mon Panier</h1>
+
+        {% if panier and panier|length > 0 %}
+
+            {# ── Liste des articles ── #}
+            <div class="panier-list">
+                {% for item in panier %}
+                <div class="panier-item">
+
+                    <div class="panier-item-info">
+                        <span class="panier-item-nom">{{ item.nom }}</span>
+                        <span class="panier-item-qte">x{{ item.quantite }}</span>
+                    </div>
+
+                    <span class="panier-item-prix">
+                        {{ (item.prix * item.quantite)|round(2) }} €
+                    </span>
+
+                    {# ── Bouton supprimer un article ── #}
+                    <form method="POST" action="{{ url_for('supprimerPanier', id=item.id) }}">
+                        <button type="submit" class="btn-supprimer">✕</button>
+                    </form>
+
+                </div>
+                {% endfor %}
+            </div>
+
+            {# ── Total ── #}
+            <div class="panier-total-section">
+                <span class="panier-total-label">Total</span>
+                <span class="panier-total-prix">{{ panier_total }} €</span>
+            </div>
+
+            {# ── Actions ── #}
+            <div class="panier-actions">
+
+                {# ── Vider le panier ── #}
+                <form method="POST" action="{{ url_for('viderPanier') }}">
+                    <button type="submit" class="btn btn-vider">
+                        🗑 Vider le panier
+                    </button>
+                </form>
+
+                {# ── Commander ── #}
+                <a href="{{url_for('passerCommande')}}" class="btn btn-primary">
+                    Commander →
+                </a>
+
+            </div>
+
+        {% else %}
+            {# ── Panier vide ── #}
+            <div class="panier-vide">
+                <p>🍽️ Votre panier est vide</p>
+                <a href="{{ url_for('categorie') }}" class="btn btn-primary">
+                    Voir nos repas
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 Restaurant. Tous droits réservés.</p>
+    </div>
+</footer>
+
+{% endblock %}

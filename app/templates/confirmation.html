@@ -1,0 +1,95 @@
+{% extends 'layout.html' %}
+{% block content %}
+<main class="main-content">
+    <div class="container">
+
+        {# ── En-tête ── #}
+        <div class="confirmation-header">
+            <div class="confirmation-icon">✔</div>
+            <h1>Commande confirmée !</h1>
+            <p>Merci pour votre commande. Elle est en cours de préparation.</p>
+        </div>
+
+        {# ── Détails commande actuelle ── #}
+        <div class="confirmation-card">
+            <div class="confirmation-items">
+                <h3>Articles commandés</h3>
+                {% for item in panier %}
+                <div class="confirmation-item">
+                    <div class="confirmation-item-info">
+                        <span class="confirmation-item-nom">{{ item.nom }}</span>
+                        <span class="confirmation-item-qte">x{{ item.quantite }}</span>
+                    </div>
+                    <span class="confirmation-item-prix">
+                        {{ (item.prix * item.quantite)|round(2) }} €
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="confirmation-total">
+                <span class="confirmation-label">Total</span>
+                <span class="confirmation-total-prix">{{ panier_total }} €</span>
+            </div>
+        </div>
+
+        {# ── Historique des commandes passées ── #}
+        <div class="historique-section">
+            <h2>Mes commandes passées</h2>
+
+            {% if commandes and commandes|length > 0 %}
+                <div class="historique-list">
+                    {% for commande in commandes %}
+                    <div class="historique-card">
+
+                        <div class="historique-header">
+                            <div class="historique-info">
+                                <span class="historique-id">#{{ commande.id }}</span>
+                                <span class="historique-date">{{ commande.date }}</span>
+                            </div>
+                            <span class="statut-badge {{ commande.statut|replace(' ', '-') }}">
+                                {{ commande.statut }}
+                            </span>
+                        </div>
+
+                        <div class="historique-items">
+                            {% for item in commande.items %}
+                            <div class="historique-item">
+                                <span>{{ item.nom }} x{{ item.quantite }}</span>
+                                <span>{{ (item.prix * item.quantite)|round(2) }} €</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="historique-total">
+                            <span>Total</span>
+                            <span class="historique-total-prix">{{ commande.total }} €</span>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                <div class="historique-vide">
+                    <p>Aucune commande passée pour le moment.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        {# ── Actions ── #}
+        <div class="confirmation-actions">
+            <a href="{{ url_for('categorie') }}" class="btn btn-primary">
+                Continuer mes achats
+            </a>
+        </div>
+
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 Restaurant. Tous droits réservés.</p>
+    </div>
+</footer>
+{% endblock %}

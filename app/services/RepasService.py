@@ -6,35 +6,36 @@ class RepasService:
     def __init__(self):
         self.rdao = RepasDAO()
 
-    def getRepasdAll(self):
+    def getRepasAll(self):
         res = self.rdao.findAll()
         return res
     
-    def getRepasByName(self, name):
-        res = self.rdao.findByName(name)
+    def getRepasByNom(self, name):
+        res = self.rdao.findByNom(name)
         if type(res) is not list:
             res = [res]
         return res
     
     def getRepasByPrix(self, prix):
         res = self.rdao.findByPrix(prix)
-        if len(res)>0 :
+        if len(res) > 0 :
             return res
         return [{}]
     
-    def getRepasByVegetarien(self, vegetarien):
-        return self.rdao.findByVegetarien(vegetarien)
+    def getRepasByCategorie(self, categorie):
+        return self.rdao.findByCategorie(categorie)
     
-    def getRepasByPays(self, pays):
+    def getRepasByStatut(self, statut):
         
-        res = self.rdao.findByPays(pays)
+        res = self.rdao.findByStatut(statut)
 
         if len(res) > 0:
             return res
         return [{}]
     
-    def getAllPays(self):
+    def getAllCategorie(self):
 
         tous = self.rdao.findAll()
-        return list({r.pays:1 for r in tous}.values())
+        
+        return list({r.categorie: 1 for r in tous}.keys())
     

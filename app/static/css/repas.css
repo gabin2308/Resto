@@ -1,0 +1,188 @@
+/* ════════════════════════════════
+   PAGE REPAS
+   ════════════════════════════════ */
+
+.main-content {
+    padding: 4rem 0 6rem;
+}
+
+.main-content h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+}
+
+.main-content h1::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 2px;
+    background: var(--accent);
+    margin-top: 1rem;
+    border-radius: 2px;
+}
+
+/* ── Filtres ── */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 2.5rem 0;
+}
+
+.filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 0.45rem 1.1rem;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+}
+
+.filter-btn:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+}
+
+.filter-btn.active {
+    color: var(--bg);
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight: 600;
+}
+
+/* ── Grille repas ── */
+.meals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.75rem;
+}
+
+.meal-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+}
+
+.meal-card img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.88) saturate(0.9);
+    transition: filter 0.25s ease;
+}
+
+.meal-card:hover img {
+    filter: brightness(0.96) saturate(1.05);
+}
+
+.meal-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+}
+
+.meal-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent-light);
+    margin-bottom: 1.1rem;
+}
+
+/* ── Bouton panier ── */
+.meal-info .btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
+}
+
+/* ════════════════════════════════
+   RESPONSIVE REPAS
+   ════════════════════════════════ */
+@media (max-width: 640px) {
+    .main-content {
+        padding: 2.5rem 0 4rem;
+    }
+
+    .meals-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        gap: 0.4rem;
+    }
+}
+/* ── Carte repas ── */
+.meal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;               
+    flex-direction: column;      
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* ── Infos repas ── */
+.meal-info {
+    padding: 1.4rem 1.5rem 1.6rem;
+    display: flex;                
+    flex-direction: column;      
+    flex: 1;                      
+}
+
+.meal-info p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+    margin-bottom: 1.1rem;
+    flex: 1;                     
+}
+.quantite-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+}
+
+.quantite-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.quantite-input {
+    width: 65px;
+    text-align: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.35rem 0.5rem;
+    transition: border-color 0.2s;
+}
+
+.quantite-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}

@@ -1,0 +1,71 @@
+<nav class="navbar">
+    <div class="nav-container">
+
+        <!-- ── Logo ── -->
+        <div class="nav-logo">
+            <h2>🍽️ Restaurant</h2>
+        </div>
+
+        <!-- ── Hamburger CSS-only ── -->
+        <input type="checkbox" id="nav-toggle" class="nav-toggle-checkbox">
+        <label for="nav-toggle" class="nav-hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+
+        <!-- ── Menu ── -->
+        <div class="nav-content">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <button class="nav-btn {{ 'active' if request.endpoint == 'index' }}"
+                            onclick="window.location.href='{{ url_for('index') }}'">
+                        Accueil
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn {{ 'active' if request.endpoint == 'categorie' }}"
+                            onclick="window.location.href='{{ url_for('categorie') }}'">
+                        Nos Repas
+                    </button>
+                </li>
+
+                <!-- ✅ Bouton commandes ajouté -->
+                <li class="nav-item">
+                    <button class="nav-btn {{ 'active' if request.endpoint == 'mesCommandes' }}"
+                            onclick="window.location.href='{{ url_for('mesCommandes') }}'">
+                        Mes Commandes
+                    </button>
+                </li>
+            </ul>
+
+            <ul class="nav-actions">
+                <li class="nav-item">
+                    <button class="nav-btn cta"
+                            onclick="window.location.href='#'">
+                        Connexion
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn cta-filled"
+                            onclick="window.location.href='#'">
+                        Inscription
+                    </button>
+                </li>
+                <li class="nav-item nav-divider-item">
+                    <div class="nav-divider"></div>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn nav-cart"
+                            onclick="window.location.href='{{ url_for('panier') }}'">
+                        🛒
+                        {% if panier_count and panier_count > 0 %}
+                            <span class="cart-count">{{ panier_count }}</span>
+                        {% endif %}
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
