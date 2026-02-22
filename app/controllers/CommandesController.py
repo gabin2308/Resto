@@ -20,17 +20,37 @@ class CommandeCOntroller:
             total  = p.total,
             statut = 'en attente'
         )
-        ps.vider()
+        ps.viderPanier()
         metadata={"title":"confirmation"}
         return render_template('confirmation.html', panier=p.items , commandes=commandes, metadata=metadata)
     
    
     @app.route('/commandes', methods=['GET'])
     def mesCommandes():
-        from app.services.CommandesService import CommandesService
         cs = CommandesService()
         commandes = cs.getAllCommande()
         metadata = {'title': 'Mes Commandes'}
         return render_template('commandes.html',
                             commandes=commandes,
                             metadata=metadata)
+    
+    @app.route('/commandes/statut', methods=['GET'])
+    def statut():
+        cs = CommandesService()
+
+        statut = request.args.get('statut', 'tous')
+
+        if statut and statut != 'tous':
+
+            commandes = cs.getByStatut(statut)
+        else:
+
+            commandes = cs.getAllCommande()
+
+        metadata = {
+            'title': 'Mes Commandes'
+        }
+
+        return render_template('commandes.html',commandes = commandes, metadata = metadata)
+
+

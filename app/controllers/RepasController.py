@@ -8,10 +8,10 @@ from app.services.RepasService import RepasService
 class RepasController:
     @app.route('/repas', methods=['GET'])
     def repas():
-        cs = RepasService()
+        rs = RepasService()
         repas_name = request.form.get("repas_name", "")
 
-        repas = cs.getRepasByNom(repas_name)
+        repas = rs.getRepasByNom(repas_name)
 
         metadata = {}
 
@@ -24,15 +24,51 @@ class RepasController:
         
     @app.route('/categorie', methods=['GET'])
     def categorie():
-        cs = RepasService()
+
+        rs = RepasService()
+
         cat = request.args.get('cat') #cat = request.args.get('cat','tous')
 
         if  not cat or cat.lower() == 'tous':
-            repas = cs.getRepasAll()
+            repas = rs.getRepasAll()
+
         else:
-            repas = cs.getRepasByCategorie(cat)
+            repas = rs.getRepasByCategorie(cat)
 
-        return render_template('repas.html', repas=repas, metadata={'title': 'Nos Repas'})
+        return render_template('repas.html',repas=repas, metadata={'title': 'Nos Repas'})
     
+    @app.route('/prix', methods=['GET'])
+    def prix():
+        rs = RepasService()
+        prix = request.args.get('prix_max', '')
+        if prix :
+            repas = rs.getRepasByPrix(prix)
 
-    
+        return render_template('repas.html', repas=repas, metadata={"title": 'Nos Repas'})
+        
+
+    @app.route('/recherche/repas', methods=['GET'])
+    def recherche():
+
+        rs = RepasService()
+        search = request.args.get('search', '')
+        if search:
+            repas = rs.getRepasByNom(search)
+        
+        return render_template('repas.html', repas = repas , metadata = {"title": 'Nos Repas'})
+
+    #@app.route('/repas/ajouter', methods=['POST'])
+    #def ajouter():
+
+        #rs = RepasService()
+        #id       = int(request.form.get('id'))
+        #nom      = request.form.get('nom')
+        #description    = request.form.get('description')
+        #categorie = request.form.get('categorie', 1)
+        #prix = float(request.form.get('prix', 0.0))
+        #statut = request.form.get('statut', 'disponible')
+        #quantite = int(request.form.get('quantite', 0))
+
+        #rs.ajouterRepas(id, nom,description,categorie,prix,statut,quantite)
+
+        #return None
