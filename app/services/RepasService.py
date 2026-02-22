@@ -39,3 +39,6 @@ class RepasService:
         
         return list({r.categorie: 1 for r in tous}.keys())
     
+    
+
+    
