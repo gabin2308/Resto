@@ -39,9 +39,9 @@
                 <a href="{{ url_for('panier') }}" class="btn btn-vider">
                     ← Retour au panier
                 </a>
-                <form method="POST" action="{{ url_for('confirmerCommande') }}">
+                <form method="GET" action="{{ url_for('paiement') }}">
                     <button type="submit" class="btn btn-primary">
-                        Confirmer la commande ✔
+                        💳 Procéder au paiement
                     </button>
                 </form>
             </div>
@@ -60,7 +60,7 @@
 
 <footer class="footer">
     <div class="container">
-        <p>&copy; 2024 Restaurant. Tous droits réservés.</p>
+        <p>&copy; 2026 Restaurant. Tous droits réservés.</p>
     </div>
 </footer>
 

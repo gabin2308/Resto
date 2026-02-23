@@ -88,7 +88,7 @@ class RepasSqliteDAO(RepasDAOInterface):
     def findAll(self):
         connection = self._getDbconnection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM repas")
+        cursor.execute("SELECT * FROM repas ORDER BY  prix ASC")
         rows = cursor.fetchall()
         connection.close()
         repas_list = []
@@ -112,7 +112,7 @@ class RepasSqliteDAO(RepasDAOInterface):
     def findByPrix(self, prix):
         connection = self._getDbconnection()
         cursor = connection.cursor()
-        query = "SELECT * FROM repas WHERE prix <= ?"
+        query = "SELECT * FROM repas WHERE prix <= ? ORDER BY prix ASC"
         rows = cursor.execute(query, (prix,)).fetchall()
         connection.close()
         return [Repas(dict(row)) for row in rows]
@@ -120,7 +120,7 @@ class RepasSqliteDAO(RepasDAOInterface):
     def findByCategorie(self, categorie):
         connection = self._getDbconnection()
         cursor = connection.cursor()
-        query = "SELECT * FROM repas WHERE categorie = ?"
+        query = "SELECT * FROM repas WHERE categorie = ? ORDER BY prix ASC"
         rows = cursor.execute(query, (categorie,)).fetchall()
         connection.close()
         return [Repas(dict(row)) for row in rows]
@@ -128,7 +128,7 @@ class RepasSqliteDAO(RepasDAOInterface):
     def findByStatut(self, statut):
         connection = self._getDbconnection()
         cursor = connection.cursor()
-        query = "SELECT * FROM repas WHERE statut = ?"
+        query = "SELECT * FROM repas WHERE statut = ? ORDER BY prix ASC"
         rows = cursor.execute(query, (statut,)).fetchall()
         connection.close()
         return [Repas(dict(row)) for row in rows]

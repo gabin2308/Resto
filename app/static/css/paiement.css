@@ -1,0 +1,19 @@
+.btn-stripe {
+    background: #635bff;
+    color: #fff;
+    border: 1px solid #635bff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    letter-spacing: 0.05em;
+}
+
+.btn-stripe:hover {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    transform: translateY(-2px);
+}

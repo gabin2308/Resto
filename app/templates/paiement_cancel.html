@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block content %}
+<main class="main-content">
+    <div class="container">
+        <div class="confirmation-header">
+            <div class="confirmation-icon" style="color:#dc5050; border-color:rgba(220,80,80,0.3); background:rgba(220,80,80,0.1);">✕</div>
+            <h1>Paiement annulé</h1>
+            <p>Votre paiement a été annulé. Votre panier est conservé.</p>
+        </div>
+        <div class="confirmation-actions">
+            <a href="{{ url_for('panier') }}" class="btn btn-primary">
+                Retour au panier
+            </a>
+        </div>
+    </div>
+</main>
+<footer class="footer"><div class="container"><p>&copy; 2024 Restaurant.</p></div></footer>
+{% endblock %}

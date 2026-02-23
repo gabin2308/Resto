@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block content %}
+<main class="main-content">
+    <div class="container">
+        <div class="confirmation-header">
+            <div class="confirmation-icon">✔</div>
+            <h1>Paiement réussi !</h1>
+            <p>Votre commande a été confirmée et est en cours de préparation.</p>
+        </div>
+        <div class="confirmation-actions">
+            <a href="{{ url_for('mesCommandes') }}" class="btn btn-primary">
+                Voir mes commandes
+            </a>
+        </div>
+    </div>
+</main>
+<footer class="footer"><div class="container"><p>&copy; 2024 Restaurant.</p></div></footer>
+{% endblock %}

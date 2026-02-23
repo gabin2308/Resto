@@ -57,7 +57,7 @@ class CommandesSqliteDAO(CommandesDAOInterface):
     def findAllCommande(self):
         connection = self._getDbConnection()
         cursor = connection.cursor()
-        rows = cursor.execute("SELECT * FROM commandes").fetchall()  
+        rows = cursor.execute("SELECT * FROM commandes ORDER BY date DESC").fetchall()  
         connection.close()
         resultat = []
         for row in rows:                                             
@@ -92,7 +92,7 @@ class CommandesSqliteDAO(CommandesDAOInterface):
         connection = self._getDbConnection()
         cursor = connection.cursor()
         rows = cursor.execute("""
-            SELECT * FROM commandes WHERE statut = ?
+            SELECT * FROM commandes WHERE statut = ? ORDER BY date DESC
         """, (statut,)).fetchall()
         connection.close()
         resultat = []
