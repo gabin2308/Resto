@@ -97,7 +97,7 @@
                         <p>{{ r.description }}</p>
                         <div class="meal-price">{{ r.prix }} €</div>
 
-                        {# ── Formulaire ajout panier ── #}
+                        {# ── Formulaire ajout au panier ── #}
                         <form method="POST" action="{{ url_for('ajouterPanier') }}">
                             <input type="hidden" name="id"   value="{{ r.id }}">
                             <input type="hidden" name="nom"  value="{{ r.nom }}">

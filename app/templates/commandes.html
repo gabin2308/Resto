@@ -6,23 +6,23 @@
 
         {# ── Filtres par statut ── #}
         <div class="filters">
-            <form method="GET" action="{{ url_for('statut') }}">
+            <form method="GET" action="{{ url_for('mesCommandes') }}">
                 <button class="filter-btn {% if not request.args.get('statut') %}active{% endif %}"
                         name="statut" value="tous">Tous</button>
             </form>
-            <form method="GET" action="{{ url_for('statut') }}">
+            <form method="GET" action="{{ url_for('mesCommandes') }}">
                 <button class="filter-btn {% if request.args.get('statut') == 'en attente' %}active{% endif %}"
                         name="statut" value="en attente">⏳ En attente</button>
             </form>
-            <form method="GET" action="{{ url_for('statut') }}">
+            <form method="GET" action="{{ url_for('mesCommandes') }}">
                 <button class="filter-btn {% if request.args.get('statut') == 'en cours' %}active{% endif %}"
                         name="statut" value="en cours">🍳 En cours</button>
             </form>
-            <form method="GET" action="{{ url_for('statut') }}">
+            <form method="GET" action="{{ url_for('mesCommandes') }}">
                 <button class="filter-btn {% if request.args.get('statut') == 'livrée' %}active{% endif %}"
                         name="statut" value="livrée">✔ Livrée</button>
             </form>
-           <!-- <form method="GET" action="{{ url_for('statut') }}">
+           <!-- <form method="GET" action="{{ url_for('mesCommandes') }}">
                 <button class="filter-btn {% if request.args.get('statut') == 'annulée' %}active{% endif %}"
                         name="statut" value="annulée">✕ Annulée</button>
             </form>-->

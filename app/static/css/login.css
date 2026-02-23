@@ -1,0 +1,89 @@
+/* ════════════════════════════════
+   AUTH
+   ════════════════════════════════ */
+.auth-card {
+    max-width: 420px;
+    margin: 4rem auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2.5rem 2rem;
+}
+
+.auth-card h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--text);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+}
+
+.auth-field label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.auth-field input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.65rem 1rem;
+    transition: border-color 0.2s;
+}
+
+.auth-field input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.auth-field input::placeholder {
+    color: var(--text-muted);
+}
+
+.auth-btn {
+    width: 100%;
+    text-align: center;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+}
+
+.auth-erreur {
+    background: rgba(220, 80, 80, 0.1);
+    border: 1px solid rgba(220, 80, 80, 0.3);
+    color: #dc5050;
+    border-radius: 6px;
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+.auth-link a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-link a:hover {
+    color: var(--accent-light);
+}

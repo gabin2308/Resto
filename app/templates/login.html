@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block content %}
+<main class="main-content">
+    <div class="container">
+        <div class="auth-card">
+            <h1>Connexion</h1>
+
+            {% if erreur %}
+            <div class="auth-erreur">{{ erreur }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="auth-field">
+                    <label>Nom</label>
+                    <input type="text" name="username" placeholder="Votre nom" required>
+                </div>
+                <div class="auth-field">
+                    <label>Mot de passe</label>
+                    <input type="password" name="password" placeholder="Votre mot de passe" required>
+                </div>
+                <button type="submit" class="btn btn-primary auth-btn">
+                    Se connecter
+                </button>
+            </form>
+
+            <p class="auth-link">
+                Pas encore de compte ?
+                <a href="{{ url_for('register') }}">S'inscrire</a>
+            </p>
+        </div>
+    </div>
+</main>
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2026 Restaurant. Tous droits réservés.</p>
+    </div>
+</footer>
+{% endblock %}

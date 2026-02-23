@@ -23,8 +23,9 @@ class CommandesService:
             return res
         return []
     
-    def ajouter(self,date, items,total, statut ):
+    def ajouter(self,date, items,total, statut,user_id = 0 ):
         commande = {
+            'user_id': user_id,
             "date": date,
             "items": items,
             "total": total,
@@ -39,3 +40,9 @@ class CommandesService:
     def vider(self):
         return self.cdao.vider()
     
+    def getByUserId(self, user_id):
+        return self.cdao.findByUserId(user_id)
+
+    def getByUserIdAndStatut(self, user_id, statut):
+        return self.cdao.findByUserIdAndStatut(user_id, statut)
+        

@@ -1,11 +1,12 @@
 from flask import render_template, request, redirect, url_for
 from app import app
 from app.services.PanierService import PanierService
-
+from app.controllers.UserController import login_required
 class PanierController:
 
     
     @app.route('/panier', methods=['GET'])
+    @login_required
     def panier():
         ps = PanierService()
         p = ps.getAllPanier()
@@ -18,6 +19,7 @@ class PanierController:
 
     
     @app.route('/panier/ajouter', methods=['POST'])
+    @login_required
     def ajouterPanier():
         ps = PanierService()
         id       = int(request.form.get('id'))
@@ -29,6 +31,7 @@ class PanierController:
 
     
     @app.route('/panier/supprimer/<int:id>', methods=['POST'])
+    @login_required
     def supprimerPanier(id):
         ps = PanierService()
         ps.supprimerRepas(id)
@@ -36,6 +39,7 @@ class PanierController:
 
     
     @app.route('/panier/vider', methods=['POST'])
+    @login_required
     def viderPanier():
         ps = PanierService()
         ps.viderPanier()
@@ -43,6 +47,7 @@ class PanierController:
 
     
     @app.route('/panier/commander', methods=['GET'])
+    @login_required
     def passerCommande():
         ps = PanierService()
         p = ps.getAllPanier()

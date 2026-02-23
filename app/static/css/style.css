@@ -4,25 +4,21 @@
    VARIABLES GLOBALES
    ════════════════════════════════ */
 :root {
-    /* Fonds — bruns chauds, moins agressifs que le noir pur */
     --nav-bg: #221a0f;
     --bg: #1c1309;
     --bg-card: #271d10;
 
-    /* Or — plus doux, moins saturé */
     --nav-accent: #d4a057;
     --accent: #d4a057;
     --nav-accent-light: #eac47e;
     --accent-light: #eac47e;
     --accent-subtle: rgba(212, 160, 87, 0.1);
 
-    /* Texte — crème doux, bon contraste sans agresser */
     --nav-text: #f4ead9;
     --text: #f4ead9;
     --nav-text-muted: #b5a28a;
     --text-muted: #b5a28a;
 
-    /* Bordures et hovers — subtils */
     --nav-border: rgba(212, 160, 87, 0.2);
     --border: rgba(212, 160, 87, 0.18);
     --nav-hover-bg: rgba(212, 160, 87, 0.08);
@@ -65,7 +61,6 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* 3 zones : logo | menu centré | actions droite */
 .nav-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -75,6 +70,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
+    position: relative;
 }
 
 /* ── Logo ── */
@@ -244,6 +240,64 @@ body {
     100% { transform: scale(1); }
 }
 
+/* ── Nom utilisateur connecté ── */
+.nav-username {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid var(--nav-border);
+    border-radius: 4px;
+    white-space: nowrap;  /* ✅ ajouté */
+}
+
+/* ════════════════════════════════
+   HAMBURGER
+   ════════════════════════════════ */
+.nav-toggle-checkbox {
+    display: none;
+}
+
+.nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1001;
+}
+
+.nav-hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--nav-text);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.nav-toggle-checkbox:checked ~ .nav-hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.nav-toggle-checkbox:checked ~ .nav-hamburger span:nth-child(2) {
+    opacity: 0;
+}
+.nav-toggle-checkbox:checked ~ .nav-hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Contenu menu desktop ── */
+.nav-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    justify-content: space-between;
+}
+
 /* ════════════════════════════════
    HERO
    ════════════════════════════════ */
@@ -405,51 +459,6 @@ body {
 }
 
 /* ════════════════════════════════
-   HAMBURGER
-   ════════════════════════════════ */
-.nav-toggle-checkbox {
-    display: none;
-}
-
-.nav-hamburger {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    cursor: pointer;
-    padding: 0.5rem;
-    z-index: 1001;
-}
-
-.nav-hamburger span {
-    display: block;
-    width: 24px;
-    height: 2px;
-    background: var(--nav-text);
-    border-radius: 2px;
-    transition: all 0.3s ease;
-}
-
-/* ── Hamburger animé quand ouvert ── */
-.nav-toggle-checkbox:checked ~ .nav-hamburger span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-}
-.nav-toggle-checkbox:checked ~ .nav-hamburger span:nth-child(2) {
-    opacity: 0;
-}
-.nav-toggle-checkbox:checked ~ .nav-hamburger span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-}
-
-/* ── Contenu menu desktop ── */
-.nav-content {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex: 1;
-    justify-content: space-between;
-}
-
-/* ════════════════════════════════
    RESPONSIVE
    ════════════════════════════════ */
 @media (max-width: 768px) {
@@ -504,12 +513,17 @@ body {
     .nav-divider-item {
         display: none;
     }
+
+    .nav-username {
+        justify-content: center;
+    }
 }
 
 @media (max-width: 640px) {
-    .nav-logo h2 { font-size: 1.2rem; }
-    .hero { padding: 3rem 1.5rem; }
-    .features { padding: 4rem 0; }
+    .nav-container { padding: 0 1rem; }
+    .nav-logo h2   { font-size: 1.2rem; }
+    .hero          { padding: 3rem 1.5rem; }
+    .features      { padding: 4rem 0; }
     .features-grid { grid-template-columns: 1fr; }
-    .container { padding: 0 1.25rem; }
+    .container     { padding: 0 1.25rem; }
 }

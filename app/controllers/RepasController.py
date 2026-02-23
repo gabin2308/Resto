@@ -3,26 +3,28 @@ from flask import Blueprint, render_template, session
 from app import app
 import json 
 from app.services.RepasService import RepasService
-
+from app.controllers.UserController import login_required
 
 class RepasController:
-    @app.route('/repas', methods=['GET'])
-    def repas():
-        rs = RepasService()
-        repas_name = request.form.get("repas_name", "")
+    ##@app.route('/repas', methods=['GET'])
+    ##@login_required
+    ##def repas():
+        ##rs = RepasService()
+        ##repas_name = request.form.get("repas_name", "")
 
-        repas = rs.getRepasByNom(repas_name)
+        ##repas = rs.getRepasByNom(repas_name)
 
-        metadata = {}
+        ##metadata = {}
 
-        if len(repas) != 1:
-            metadata["title"] = "results"
-        else:
-            metadata["title"] = repas[0].nom
-        return render_template("repas.html", repas=repas, metadata=metadata)
+        ##if len(repas) != 1:
+            #metadata["title"] = "results"
+        ##else:
+            #metadata["title"] = repas[0].nom
+        ##return render_template("repas.html", repas=repas, metadata=metadata)
     
         
     @app.route('/categorie', methods=['GET'])
+    @login_required
     def categorie():
 
         rs = RepasService()
@@ -38,6 +40,7 @@ class RepasController:
         return render_template('repas.html',repas=repas, metadata={'title': 'Nos Repas'})
     
     @app.route('/prix', methods=['GET'])
+    @login_required
     def prix():
         rs = RepasService()
         prix = request.args.get('prix_max', '')
@@ -48,12 +51,15 @@ class RepasController:
         
 
     @app.route('/recherche/repas', methods=['GET'])
+    @login_required
     def recherche():
 
         rs = RepasService()
         search = request.args.get('search', '')
         if search:
             repas = rs.getRepasByNom(search)
+        else:
+            repas = rs.getRepasAll()
         
         return render_template('repas.html', repas = repas , metadata = {"title": 'Nos Repas'})
 
