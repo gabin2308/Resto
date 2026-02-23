@@ -21,6 +21,7 @@ class PanierSqliteDAO(PanierDAOInterface):
         query = """
             CREATE TABLE IF NOT EXISTS paniers (
                 id     INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL DEFAULT 0,
                 items  TEXT    NOT NULL DEFAULT '[]',
                 total  REAL    NOT NULL DEFAULT 0.0,
                 count  INTEGER NOT NULL DEFAULT 0
@@ -30,20 +31,36 @@ class PanierSqliteDAO(PanierDAOInterface):
         connection.commit()
         connection.close()
 
-    def findAll(self):
+    def findAll(self,user_id):
         connection = self._getDbConnection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM paniers")
-        row = cursor.fetchone()
+        row = cursor.execute("SELECT * FROM paniers WHERE user_id =? ", (user_id,)).fetchone()
         connection.close()
         if row:
             return Panier({
                 'id'   : row['id'],
+                'user_id' : row['user_id'],
                 'items': json.loads(row['items']),
                 'total': row['total'],
                 'count': row['count']
             })
-        return Panier({'id': None, 'items': [], 'total': 0.0, 'count': 0})
+        return Panier({'id': None,'user_id':user_id, 'items': [], 'total': 0.0, 'count': 0})
+
+    def findByUserId(self, user_id):
+        connection = self._getDbConnection()
+        cursor = connection.cursor()
+        rows = cursor.execute(" SELECT * FROM   paniers WHERE user_id = ?", (user_id,)).fetchone()
+        connection.close()
+        resultat = []
+        for row in rows:
+            resultat.append(Panier({
+                'id' : row['id'],
+                'user_id': row['user_id'],
+                'items': json.loads(row['items']),
+                'total' : row['total'],
+                'count' : row['count']
+            }))
+
 
     def findByTotal(self, total):
         connection = self._getDbConnection()
@@ -54,6 +71,7 @@ class PanierSqliteDAO(PanierDAOInterface):
         for row in rows:
             resultat.append(Panier({
                 'id'   : row['id'],
+                'user_id':row['user_id'],
                 'items': json.loads(row['items']),
                 'total': row['total'],
                 'count': row['count']
@@ -82,18 +100,19 @@ class PanierSqliteDAO(PanierDAOInterface):
         for row in rows:
             resultat.append(Panier({
                 'id'   : row['id'],
+                'user_id':row['user_id'],
                 'items': json.loads(row['items']),
                 'total': row['total'],
                 'count': row['count']
             }))
         return resultat
 
-    def ajouterRepas(self, id, nom, prix, quantite):
+    def ajouterRepas(self,user_id, id, nom, prix, quantite):
         connection = self._getDbConnection()
         cursor = connection.cursor()
 
         # Récupère le panier existant
-        row = cursor.execute("SELECT * FROM paniers LIMIT 1").fetchone()
+        row = cursor.execute("SELECT * FROM paniers WHERE user_id =?", (user_id,)).fetchone()
 
         if row:
             # Charge les items existants
@@ -124,19 +143,19 @@ class PanierSqliteDAO(PanierDAOInterface):
             count = quantite
 
             cursor.execute("""
-                INSERT INTO paniers (items, total, count)
-                VALUES (?, ?, ?)
-            """, (json.dumps(items), total, count))
+                INSERT INTO paniers (user_id,items, total, count)
+                VALUES (?, ?, ?, ?)
+            """, (user_id,json.dumps(items), total, count))
 
         connection.commit()
         connection.close()
 
-    def supprimerRepas(self, id):
+    def supprimerRepas(self, id, user_id):
         connection = self._getDbConnection()
         cursor = connection.cursor()
 
         # Récupère le panier existant
-        row = cursor.execute("SELECT * FROM paniers LIMIT 1").fetchone()
+        row = cursor.execute("SELECT * FROM paniers WHERE user_id =?", (user_id,)).fetchone()
 
         if row:
             # Charge les items
@@ -157,9 +176,9 @@ class PanierSqliteDAO(PanierDAOInterface):
         connection.commit()
         connection.close()
 
-    def viderPanier(self):
+    def viderPanier(self, user_id):
         connection = self._getDbConnection()
         cursor = connection.cursor()
-        cursor.execute("DELETE FROM paniers")  
+        cursor.execute("DELETE FROM paniers WHERE user_id=?", (user_id,))  
         connection.commit()
         connection.close()
