@@ -1,0 +1,190 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<main class="main-content gest-main">
+    <div class="gest-wrapper">
+
+        {# ── En-tête + stats ── #}
+        <div class="gest-header">
+            <div class="gest-header-left">
+                <h1 class="gest-title">Gestion des commandes</h1>
+                <span class="gest-subtitle">Gérez et mettez à jour les commandes clients</span>
+            </div>
+            <div class="gest-stats">
+                <div class="gest-stat">
+                    <span class="gest-stat-val">
+                        {{ commandes | selectattr('statut', 'equalto', 'en attente') | list | length }}
+                    </span>
+                    <span class="gest-stat-label">En attente</span>
+                </div>
+                <div class="gest-stat">
+                    <span class="gest-stat-val">
+                        {{ commandes | selectattr('statut', 'equalto', 'en cours') | list | length }}
+                    </span>
+                    <span class="gest-stat-label">En cours</span>
+                </div>
+                <div class="gest-stat">
+                    <span class="gest-stat-val">
+                        {{ commandes | selectattr('statut', 'equalto', 'livrée') | list | length }}
+                    </span>
+                    <span class="gest-stat-label">Livrées</span>
+                </div>
+                <div class="gest-stat gest-stat-total">
+                    <span class="gest-stat-val">{{ commandes | length }}</span>
+                    <span class="gest-stat-label">Total</span>
+                </div>
+            </div>
+        </div>
+
+        {# ── Filtres par statut ── #}
+        <div class="gest-filters">
+            <form method="GET" action="{{ url_for('gestionnaire') }}">
+                <button type="submit" name="statut" value=""
+                        class="gest-filter-btn {% if not request.args.get('statut') %}active{% endif %}">
+                    Toutes
+                </button>
+            </form>
+            <form method="GET" action="{{ url_for('gestionnaire') }}">
+                <button type="submit" name="statut" value="en attente"
+                        class="gest-filter-btn attente {% if request.args.get('statut') == 'en attente' %}active{% endif %}">
+                    ⏳ En attente
+                </button>
+            </form>
+            <form method="GET" action="{{ url_for('gestionnaire') }}">
+                <button type="submit" name="statut" value="en cours"
+                        class="gest-filter-btn cours {% if request.args.get('statut') == 'en cours' %}active{% endif %}">
+                    🍳 En cours
+                </button>
+            </form>
+            <form method="GET" action="{{ url_for('gestionnaire') }}">
+                <button type="submit" name="statut" value="livrée"
+                        class="gest-filter-btn livree {% if request.args.get('statut') == 'livrée' %}active{% endif %}">
+                    ✔ Livrée
+                </button>
+            </form>
+            <form method="GET" action="{{ url_for('gestionnaire') }}">
+                <button type="submit" name="statut" value="annulée"
+                        class="gest-filter-btn annulee {% if request.args.get('statut') == 'annulée' %}active{% endif %}">
+                    ✕ Annulée
+                </button>
+            </form>
+        </div>
+
+        {# ── Flash messages ── #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="gest-flash gest-flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {# ── Tableau des commandes ── #}
+        {% if commandes and commandes | length > 0 %}
+
+        <div class="gest-table-wrapper">
+            <table class="gest-table">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Date</th>
+                        <th>User_id</th>
+                        <th>Articles</th>
+                        <th>Total</th>
+                        <th>Statut</th>
+                        <th>Changer statut</th>
+                       <!--<th>Supprimer</th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for commande in commandes %}
+                    <tr class="gest-row statut-row-{{ commande.statut | replace(' ', '-') }}">
+
+                        <td class="gest-td-id">#{{ commande.id }}</td>
+
+                        <td class="gest-td-date">{{ commande.date }}</td>
+
+                        <td class="gest-td-client">
+                            {% if commande.user_id %}
+                                👤 {{ commande.user_id }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td class="gest-td-items">
+                            {% for item in commande.items %}
+                            <span class="gest-pill">{{ item.nom }} ×{{ item.quantite }}</span>
+                            {% endfor %}
+                        </td>
+
+                        <td class="gest-td-total">{{ commande.total }} €</td>
+
+                        <td class="gest-td-statut">
+                            <span class="statut-badge {{ commande.statut | replace(' ', '-') }}">
+                                {% if commande.statut == 'en attente' %}⏳
+                                {% elif commande.statut == 'en cours' %}🍳
+                                {% elif commande.statut == 'livrée' %}✔
+                                {% else %}✕
+                                {% endif %}
+                                {{ commande.statut }}
+                            </span>
+                        </td>
+
+                        <td class="gest-td-actions">
+                            <form method="POST"
+                                  action="{{url_for('changerStatut', user_id=commande.user_id, id=commande.id)}}"
+                                  class="gest-statut-form">
+                                <!--<input type="hidden" name="statut"
+                                       value="{{ request.args.get('statut', '') }}">-->
+                                <select name="statut" class="gest-select">
+                                    <option value="en attente" {% if commande.statut == 'en attente' %}selected{% endif %}>⏳ En attente</option>
+                                    <option value="en cours"   {% if commande.statut == 'en cours'   %}selected{% endif %}>🍳 En cours</option>
+                                    <option value="livrée"     {% if commande.statut == 'livrée'     %}selected{% endif %}>✔ Livrée</option>
+                                    <option value="annulée"    {% if commande.statut == 'annulée'    %}selected{% endif %}>✕ Annulée</option>
+                                </select>
+                                <button type="submit" class="gest-btn gest-btn-appliquer">
+                                    Appliquer
+                                </button>
+                            </form>
+                        </td>
+
+                        <!--<td class="gest-td-suppr">
+                            <form method="POST"
+                                  action="{{url_for('changerStatut', user_id=commande.user_id, id = commande.id)}}">
+                                <input type="hidden" name="statut"
+                                       value="{{ request.args.get('statut', '') }}">
+                                <button type="submit" class="gest-btn gest-btn-suppr"
+                                        title="Supprimer la commande #{{ commande.id }}">
+                                    🗑
+                                </button>
+                            </form>
+                        </td>-->
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% else %}
+        <div class="gest-vide">
+            <p>🍽️ Aucune commande trouvée</p>
+            {% if request.args.get('statut') %}
+            <a href="{{ url_for('gestionnaire') }}" class="btn btn-primary">
+                Voir toutes les commandes
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2026 Restaurant. Tous droits réservés.</p>
+    </div>
+</footer>
+
+{% endblock %}

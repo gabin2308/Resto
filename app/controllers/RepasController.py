@@ -46,6 +46,8 @@ class RepasController:
         prix = request.args.get('prix_max', '')
         if prix :
             repas = rs.getRepasByPrix(prix)
+        else:
+            repas = rs.getRepasAll()
 
         return render_template('repas.html', repas=repas, metadata={"title": 'Nos Repas'})
         

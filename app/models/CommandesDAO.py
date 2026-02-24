@@ -242,3 +242,11 @@ class CommandesSqliteDAO(CommandesDAOInterface):
         cursor.execute("DELETE FROM commandes")
         connection.commit()
         connection.close()
+
+    def updateByStatut(self, user_id, statut,id):
+        connection = self._getDbConnection()
+        cursor = connection.cursor()
+        query = "UPDATE commandes SET statut = ? WHERE user_id = ? AND id=?"
+        cursor.execute(query, (statut, user_id,id))
+        connection.commit()
+        connection.close()

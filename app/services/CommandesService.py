@@ -45,4 +45,7 @@ class CommandesService:
 
     def getByUserIdAndStatut(self, user_id, statut):
         return self.cdao.findByUserIdAndStatut(user_id, statut)
+    
+    def getUpdateByStatut(self, user_id, statut,id):
+        return self.cdao.updateByStatut(user_id, statut,id)
         

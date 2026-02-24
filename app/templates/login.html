@@ -22,6 +22,12 @@
                     Se connecter
                 </button>
             </form>
+            {% if msg_error %}
+				<p class="texte_danger" style="margin-top: 16px; text-align: center; font-size: 0.82rem;">
+					<i class="bi bi-exclamation-triangle-fill" style="margin-right: 6px;"></i>
+					{{ msg_error }}
+				</p>
+			{% endif %}
 
             <p class="auth-link">
                 Pas encore de compte ?

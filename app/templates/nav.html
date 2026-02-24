@@ -18,22 +18,22 @@
         <div class="nav-content">
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <button class="nav-btn {{ 'active' if request.endpoint == 'index' }}"
-                            onclick="window.location.href='{{ url_for('index') }}'">
+                    <a href="{{ url_for('index') }}"
+                       class="nav-btn {{ 'active' if request.endpoint == 'index' }}">
                         Accueil
-                    </button>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-btn {{ 'active' if request.endpoint == 'categorie' }}"
-                            onclick="window.location.href='{{ url_for('categorie') }}'">
+                    <a href="{{ url_for('categorie') }}"
+                       class="nav-btn {{ 'active' if request.endpoint == 'categorie' }}">
                         Nos Repas
-                    </button>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-btn {{ 'active' if request.endpoint == 'mesCommandes' }}"
-                            onclick="window.location.href='{{ url_for('mesCommandes') }}'">
+                    <a href="{{ url_for('mesCommandes') }}"
+                       class="nav-btn {{ 'active' if request.endpoint == 'mesCommandes' }}">
                         Mes Commandes
-                    </button>
+                    </a>
                 </li>
             </ul>
 
@@ -48,33 +48,32 @@
                 </li>
 
                 {% if session["role"] == "admin" %}
+                <!-- ── Bouton Gestionnaire (admin uniquement) ── -->
                 <li class="nav-item">
-                  onclick="window.location.href='#'">
-                        🛡 Admin
-                    </button>
+                    <a href="{{ url_for('gestionnaire') }}"
+                       class="nav-btn nav-btn-admin {{ 'active' if request.endpoint == 'gestionnaire' }}">
+                        🛡 Gestionnaire
+                    </a>
                 </li>
                 {% endif %}
 
                 <li class="nav-item">
-                    <button class="nav-btn cta"
-                            onclick="window.location.href='{{ url_for('logout') }}'">
+                    <a href="{{ url_for('logout') }}" class="nav-btn cta">
                         Déconnexion
-                    </button>
+                    </a>
                 </li>
 
                 {% else %}
                 <!-- ── Non connecté ── -->
                 <li class="nav-item">
-                    <button class="nav-btn cta"
-                            onclick="window.location.href='{{ url_for('login') }}'">
+                    <a href="{{ url_for('login') }}" class="nav-btn cta">
                         Connexion
-                    </button>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-btn cta-filled"
-                            onclick="window.location.href='{{ url_for('register') }}'">
+                    <a href="{{ url_for('register') }}" class="nav-btn cta-filled">
                         Inscription
-                    </button>
+                    </a>
                 </li>
                 {% endif %}
 
@@ -84,17 +83,15 @@
 
                 <!-- ── Panier ── -->
                 <li class="nav-item">
-                    <button class="nav-btn nav-cart"
-                            onclick="window.location.href='{{ url_for('panier') }}'">
+                    <a href="{{ url_for('panier') }}" class="nav-btn nav-cart">
                         🛒
                         {% if panier_count and panier_count > 0 %}
-                            <span class="cart-count">{{ panier_count }}</span>
+                        <span class="cart-count">{{ panier_count }}</span>
                         {% endif %}
-                    </button>
+                    </a>
                 </li>
 
             </ul>
         </div>
-
     </div>
 </nav>
