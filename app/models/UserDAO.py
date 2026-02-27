@@ -38,7 +38,7 @@ class UserSqliteDAO(UserDAOInterface):
         password_hash = hashed_bytes.decode('utf-8')
         return password_hash
     
-    def createUser(self, username, password, role='lecteur'):
+    def createUser(self, username, password, role='admin'):
         connection = self._getDbConnection()
         hashed_password = self._generatePawdHash(password)
         try:

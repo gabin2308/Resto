@@ -2,10 +2,13 @@ from flask import render_template, request, redirect, url_for, session as flask_
 from app import app
 from datetime import datetime
 import stripe
+import os
 from app.services.PaiementService import PaiementService
 from app.services.CommandesService import CommandesService
 from app.services.PanierService import PanierService
 from app.controllers.UserController import login_required
+
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
 class PaiementController:
 

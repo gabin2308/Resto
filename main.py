@@ -1,5 +1,8 @@
 from app import app
 import unicodedata
+from dotenv import load_dotenv  
+
+load_dotenv()  
 
 def slugify(text):
     text = unicodedata.normalize('NFD', text)
