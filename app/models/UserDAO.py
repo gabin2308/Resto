@@ -110,3 +110,19 @@ class UserSqliteDAO(UserDAOInterface):
             connection.commit()
         finally:
             connection.close()
+
+    def findByRole(self, role):
+        connection = self._getDbConnection()
+        cursor = connection.cursor()
+        users = cursor.execute("SELECT * FROM users WHERE role = ?", (role,)).fetchall()
+        connection.close()
+        return [User(dict(user)) for user in users]
+    
+    def updateByRole(self,id,role):
+
+        connection = self._getDbConnection()
+        cursor = connection.cursor()
+        query = "UPDATE users SET role = ? WHERE  id = ?"
+        cursor.execute(query, (role,id))
+        connection.commit()
+        connection.close()

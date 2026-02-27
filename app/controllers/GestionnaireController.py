@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from app import app
 import json
-from datetime import datetime
+#from datetime import datetime
 from app.services.CommandesService import CommandesService
 from app.services.UserService import UserService
 from app.controllers.UserController import login_required, reqrole
@@ -10,7 +10,7 @@ from app.controllers.UserController import login_required, reqrole
 class GestionnaireController:
 
     @app.route('/gestionnaire', methods=['GET'])
-    @reqrole('admin')
+    @reqrole('gestionnaire','admin')
     def gestionnaire():
         cs = CommandesService()
         us = UserService()
@@ -36,7 +36,7 @@ class GestionnaireController:
         )
 
     @app.route('/gestionnaire/utilisateur/<int:user_id>/statut/<int:id>', methods=['POST'])
-    @reqrole('admin')
+    @reqrole('gestionnaire','admin')
     def changerStatut(user_id,id):
         cs = CommandesService()
         nouveau_statut = request.form.get('statut','')

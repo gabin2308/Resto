@@ -1,0 +1,623 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% set panel = request.args.get('panel', 'commandes') %}
+
+<div class="admin-shell">
+
+  <!-- ════ SIDEBAR ════ -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <span class="sidebar-brand-icon">🛡</span>
+      <span class="sidebar-brand-text">Admin Panel</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('admin') }}?panel=commandes"
+        class="sidebar-link {{ 'active' if panel == 'commandes' }}">
+        <span class="sidebar-icon">🧾</span> Commandes
+        {% set nb_attente = commandes | selectattr('statut','equalto','en attente') | list | length %}
+        {% if nb_attente > 0 %}
+        <span class="sidebar-badge">{{ nb_attente }}</span>
+        {% endif %}
+      </a>
+
+      <a href="{{ url_for('adminUser') }}?panel=users"
+        class="sidebar-link {{ 'active' if panel == 'users' }}">
+        <span class="sidebar-icon">👥</span> Utilisateurs
+        <span class="sidebar-badge" style="background:var(--accent-subtle);color:var(--text-muted);">
+          {{ users | length }}
+        </span>
+      </a>
+
+      <a href="{{ url_for('repas') }}?panel=repas"
+        class="sidebar-link {{ 'active' if panel == 'repas' }}">
+        <span class="sidebar-icon">🍽️</span> Repas
+        <span class="sidebar-badge" style="background:var(--accent-subtle);color:var(--text-muted);">
+          {{ repas | length }}
+        </span>
+      </a>
+    </nav>
+
+   <!-- <div class="sidebar-footer">
+      <a href="{{ url_for('gestionnaire') }}" class="sidebar-link">
+        <span class="sidebar-icon">⚙️</span> Gestionnaire
+      </a>
+      <a href="{{ url_for('index') }}" class="sidebar-link">
+        <span class="sidebar-icon">🏠</span> Accueil
+      </a>
+      <a href="{{ url_for('logout') }}" class="sidebar-link sidebar-logout">
+        <span class="sidebar-icon">🚪</span> Déconnexion
+      </a>
+    </div>-->
+  </aside>
+
+  <!-- ════ MAIN ════ -->
+  <main class="admin-main">
+
+    {# ── Flash messages ── #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {# ══════ COMMANDES ══════ #}
+    {% if panel == 'commandes' %}
+
+    <div class="stats-grid" style="margin-bottom:22px;">
+      <div class="stat-card">
+        <span class="stat-icon">🧾</span>
+        <span class="stat-val">{{ commandes | length }}</span>
+        <span class="stat-lbl">Total</span>
+      </div>
+      <div class="stat-card stat-yellow">
+        <span class="stat-icon">⏳</span>
+        <span class="stat-val">{{ commandes | selectattr('statut','equalto','en attente') | list | length }}</span>
+        <span class="stat-lbl">En attente</span>
+      </div>
+      <div class="stat-card stat-blue">
+        <span class="stat-icon">🍳</span>
+        <span class="stat-val">{{ commandes | selectattr('statut','equalto','en cours') | list | length }}</span>
+        <span class="stat-lbl">En cours</span>
+      </div>
+      <div class="stat-card stat-green">
+        <span class="stat-icon">✔</span>
+        <span class="stat-val">{{ commandes | selectattr('statut','equalto','livrée') | list | length }}</span>
+        <span class="stat-lbl">Livrées</span>
+      </div>
+      <div class="stat-card stat-orange">
+        <span class="stat-icon">💶</span>
+        <span class="stat-val">{{ commandes | sum(attribute='total') | round(2) }} €</span>
+        <span class="stat-lbl">Chiffre d'affaires</span>
+      </div>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1>Commandes</h1>
+        <span class="page-sub">{{ commandes | length }} commande(s)</span>
+      </div>
+    </div>
+
+    {% set sf = request.args.get('statut_filter', '') %}
+    <div class="toolbar">
+      <div class="filter-group">
+        <a href="{{ url_for('admin') }}?panel=commandes"
+           class="filter-pill {{ 'active' if not sf }}">Toutes</a>
+        <a href="{{ url_for('admin') }}?panel=commandes&statut_filter=en+attente"
+           class="filter-pill yellow {{ 'active' if sf == 'en attente' }}">⏳ En attente</a>
+        <a href="{{ url_for('admin') }}?panel=commandes&statut_filter=en+cours"
+           class="filter-pill blue {{ 'active' if sf == 'en cours' }}">🍳 En cours</a>
+        <a href="{{ url_for('admin') }}?panel=commandes&statut_filter=livrée"
+           class="filter-pill green {{ 'active' if sf == 'livrée' }}">✔ Livrée</a>
+        <a href="{{ url_for('admin') }}?panel=commandes&statut_filter=annulée"
+           class="filter-pill red {{ 'active' if sf == 'annulée' }}">✕ Annulée</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Date</th>
+            <th>Utilisateur</th>
+            <th>Articles</th>
+            <th>Total</th>
+            <th>Statut</th>
+            <th>Changer statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set commandes_filtrees = commandes if not sf else commandes | selectattr('statut','equalto',sf) | list %}
+          {% if commandes_filtrees | length > 0 %}
+            {% for commande in commandes_filtrees | sort(attribute='id', reverse=True) %}
+            <tr>
+              <td class="mono">#{{ commande.id }}</td>
+              <td class="mono">{{ commande.date }}</td>
+              <td>
+                {% if commande.user_id %}
+                <div class="user-cell">
+                  <span class="user-avatar">{{ commande.user_id }}</span>
+                  <span>User #{{ commande.user_id }}</span>
+                </div>
+                {% else %}
+                <span class="muted">—</span>
+                {% endif %}
+              </td>
+              <td>
+                {% for item in commande.items %}
+                <span class="pill">{{ item.nom }} ×{{ item.quantite }}</span>
+                {% endfor %}
+              </td>
+              <td><strong>{{ commande.total }} €</strong></td>
+              <td>
+                {% if commande.statut == 'en attente' %}
+                  <span class="badge badge-yellow">⏳ {{ commande.statut }}</span>
+                {% elif commande.statut == 'en cours' %}
+                  <span class="badge badge-blue">🍳 {{ commande.statut }}</span>
+                {% elif commande.statut == 'livrée' %}
+                  <span class="badge badge-green">✔ {{ commande.statut }}</span>
+                {% else %}
+                  <span class="badge badge-red">✕ {{ commande.statut }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <form method="POST"
+                      action="{{ url_for('changerStatut', user_id=commande.user_id, id=commande.id) }}"
+                      class="inline-form">
+                  <select name="statut" class="select">
+                    <option value="en attente" {% if commande.statut=='en attente' %}selected{% endif %}>⏳ En attente</option>
+                    <option value="en cours"   {% if commande.statut=='en cours'   %}selected{% endif %}>🍳 En cours</option>
+                    <option value="livrée"     {% if commande.statut=='livrée'     %}selected{% endif %}>✔ Livrée</option>
+                    <option value="annulée"    {% if commande.statut=='annulée'    %}selected{% endif %}>✕ Annulée</option>
+                  </select>
+                  <button type="submit" class="btn-sm" style="background:var(--teal-dim);color:var(--teal);border-color:var(--teal);">OK</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+          <tr><td colspan="7" class="empty">🍽️ Aucune commande trouvée</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    {% endif %}
+
+    {# ══════ UTILISATEURS ══════ #}
+    {% if panel == 'users' %}
+
+    <div class="stats-grid" style="margin-bottom:22px;">
+      <div class="stat-card">
+        <span class="stat-icon">👥</span>
+        <span class="stat-val">{{ users | length }}</span>
+        <span class="stat-lbl">Total</span>
+      </div>
+      <div class="stat-card stat-orange">
+        <span class="stat-icon">🛡</span>
+        <span class="stat-val">{{ users | selectattr('role','equalto','admin') | list | length }}</span>
+        <span class="stat-lbl">Admins</span>
+      </div>
+      <div class="stat-card stat-blue">
+        <span class="stat-icon">⚙️</span>
+        <span class="stat-val">{{ users | selectattr('role','equalto','gestionnaire') | list | length }}</span>
+        <span class="stat-lbl">Gestionnaires</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">👤</span>
+        <span class="stat-val">{{ users | selectattr('role','equalto','lecteur') | list | length }}</span>
+        <span class="stat-lbl">Utilisateurs</span>
+      </div>
+    </div>
+
+    <div class="page-header">
+      <div>
+        <h1>Utilisateurs</h1>
+        <span class="page-sub">{{ users | length }} compte(s)</span>
+      </div>
+    </div>
+
+    {% set rf = request.args.get('role_filter', '') %}
+    <div class="toolbar">
+      <div class="filter-group">
+        <a href="{{ url_for('adminUser') }}?panel=users"
+           class="filter-pill {{ 'active' if not rf }}">Tous</a>
+        <a href="{{ url_for('adminUser') }}?panel=users&role_filter=admin"
+           class="filter-pill orange {{ 'active' if rf == 'admin' }}">🛡 Admin</a>
+        <a href="{{ url_for('adminUser') }}?panel=users&role_filter=gestionnaire"
+           class="filter-pill blue {{ 'active' if rf == 'gestionnaire' }}">⚙️ Gestionnaire</a>
+        <a href="{{ url_for('adminUser') }}?panel=users&role_filter=lecteur"
+           class="filter-pill {{ 'active' if rf == 'lecteur' }}">👤 Utilisateur</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Rôle</th>
+            <!--<th>Commandes</th>-->
+            <!--<th>Total dépensé</th>-->
+            <th>Changer rôle</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set users_filtres = users if not rf else users | selectattr('role','equalto',rf) | list %}
+          {% if users_filtres | length > 0 %}
+            {% for user in users_filtres %}
+            {% set user_cmds = commandes | selectattr('user_id','equalto', user.id) | list %}
+            <tr>
+              <td class="mono">#{{ user.id }}</td>
+              <td>
+                <div class="user-cell">
+                  <span class="user-avatar">{{ user.username[0] | upper }}</span>
+                  <strong>{{ user.username }}</strong>
+                </div>
+              </td>
+              <td>
+                {% if user.role == 'admin' %}
+                  <span class="badge badge-orange">🛡 admin</span>
+                {% elif user.role == 'gestionnaire' %}
+                  <span class="badge badge-blue">⚙️ gestionnaire</span>
+                {% else %}
+                  <span class="badge">👤 user</span>
+                {% endif %}
+              </td>
+              <!--<td class="mono">{{ user_cmds | length }}</td>-->
+             <!-- <td class="mono">{{ user_cmds | sum(attribute='total') | round(2) }} €</td>-->
+              <td>
+                <form method="POST"
+                      action="{{ url_for('updateRole', id=user.id, role = user.role) }}"
+                      class="inline-form">
+                  <select name="role" class="select">
+                    <option value="lecteur"         {% if user.role=='lecteur'         %}selected{% endif %}>👤 lecteur</option>
+                    <option value="gestionnaire" {% if user.role=='gestionnaire' %}selected{% endif %}>⚙️ gestionnaire</option>
+                    <option value="admin"        {% if user.role=='admin'        %}selected{% endif %}>🛡 admin</option>
+                  </select>
+                  <button type="submit" class="btn-sm" style="background:var(--teal-dim);color:var(--teal);border-color:var(--teal);">OK</button>
+                </form>
+              </td>
+              <td>
+                {% if user.id != session.get('user_id') %}
+                <form method="POST"
+                      action="{{ url_for('adminDelete', user_id=user.id) }}"
+                      onsubmit="return confirm('Supprimer « {{ user.username }} » ?')">
+                  <button class="btn-sm btn-danger" type="submit">🗑 Supprimer</button>
+                </form>
+                {% else %}
+                <span class="muted">vous</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+          <tr><td colspan="7" class="empty">Aucun utilisateur trouvé</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    {% endif %}
+    {# ══════ REPAS ══════ #}
+{% if panel == 'repas' %}
+
+{% set mode    = request.args.get('mode', '') %}
+{% set edit_id = request.args.get('edit_id', 0) | int %}
+{% set cf      = request.args.get('cat_filter', '') %}
+
+<div class="stats-grid" style="margin-bottom:22px;">
+  <div class="stat-card">
+    <span class="stat-icon">🍽️</span>
+    <span class="stat-val">{{ repas | length }}</span>
+    <span class="stat-lbl">Total</span>
+  </div>
+  <div class="stat-card stat-green">
+    <span class="stat-icon">✔</span>
+    <span class="stat-val">{{ repas | selectattr('statut','equalto','disponible') | list | length }}</span>
+    <span class="stat-lbl">Disponibles</span>
+  </div>
+  <div class="stat-card stat-red">
+    <span class="stat-icon">✕</span>
+    <span class="stat-val">{{ repas | selectattr('statut','equalto','indisponible') | list | length }}</span>
+    <span class="stat-lbl">Indisponibles</span>
+  </div>
+  <div class="stat-card stat-yellow">
+    <span class="stat-icon">🥗</span>
+    <span class="stat-val">{{ repas | selectattr('categorie','equalto','Entrées') | list | length }}</span>
+    <span class="stat-lbl">Entrées</span>
+  </div>
+  <div class="stat-card stat-orange">
+    <span class="stat-icon">🍖</span>
+    <span class="stat-val">{{ repas | selectattr('categorie','equalto','Plats principaux') | list | length }}</span>
+    <span class="stat-lbl">Plats</span>
+  </div>
+  <div class="stat-card stat-blue">
+    <span class="stat-icon">🍰</span>
+    <span class="stat-val">{{ repas | selectattr('categorie','equalto','Desserts') | list | length }}</span>
+    <span class="stat-lbl">Desserts</span>
+  </div>
+</div>
+
+<div class="page-header">
+  <div>
+    <h1>Repas</h1>
+    <span class="page-sub">{{ repas | length }} plat(s)</span>
+  </div>
+  {% if mode != 'ajouter' %}
+  <a href="{{ url_for('repas') }}?panel=repas&mode=ajouter" class="btn-primary">
+    ＋ Ajouter un plat
+  </a>
+  {% endif %}
+</div>
+
+{# ── Formulaire Ajouter ── #}
+{% if mode == 'ajouter' %}
+<div class="card repas-form-card">
+  <div class="card-header">
+    <span>➕ Nouveau plat</span>
+    <a href="{{ url_for('repas') }}?panel=repas" class="btn-sm">✕ Annuler</a>
+  </div>
+  <form method="POST" action="{{ url_for('ajouterRepas') }}" enctype="multipart/form-data" class="repas-form">
+
+    <div class="repas-form-body">
+
+      {# ── Zone photo ── #}
+      <div class="repas-photo-zone">
+        <label class="repas-photo-label">
+          <input type="file" name="photo" accept="image/*" class="repas-photo-input"
+                 onchange="previewPhoto(this)">
+          <div class="repas-photo-placeholder" id="preview-add">
+            <span class="repas-photo-icon">📷</span>
+            <span class="repas-photo-hint">Cliquer pour ajouter une photo</span>
+            <span class="repas-photo-sub">JPG, PNG, WEBP — max 2 Mo</span>
+          </div>
+        </label>
+      </div>
+
+      {# ── Champs ── #}
+      <div class="repas-form-fields">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nom</label>
+            <input type="text" name="nom" class="form-input" placeholder="Ex: Poulet rôti" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Catégorie</label>
+            <select name="categorie" class="form-input select" required>
+              <option value="">— Choisir —</option>
+              <option value="Entrées">Entrées</option>
+              <option value="Plats principaux">Plats principaux</option>
+              <option value="Desserts">Desserts</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Prix (€)</label>
+            <input type="number" name="prix" class="form-input" step="0.01" min="0" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock</label>
+            <input type="number" name="quantite" class="form-input" min="0" placeholder="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Statut</label>
+            <select name="statut" class="form-input select">
+              <option value="disponible">✔ Disponible</option>
+              <option value="indisponible">✕ Indisponible</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-input" rows="3" placeholder="Description du plat…"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <!--<a href="{{ url_for('repas') }}?panel=repas" class="btn-sm">Annuler</a>-->
+      <button type="submit" class="btn-primary">➕ Ajouter le plat</button>
+    </div>
+
+  </form>
+</div>
+{% endif %}
+
+{# ── Formulaire Modifier ── #}
+{% if mode == 'modifier' and edit_id %}
+  {% for r in repas if r.id == edit_id %}
+  <div class="card repas-form-card">
+    <div class="card-header">
+      <span>✏️ Modifier — <strong>{{ r.nom }}</strong></span>
+      <a href="{{ url_for('repas') }}?panel=repas" class="btn-sm">✕ Annuler</a>
+    </div>
+    <form method="POST" action="{{ url_for('modifierRepas', id=r.id) }}" enctype="multipart/form-data" class="repas-form">
+
+      <div class="repas-form-body">
+
+        {# ── Zone photo ── #}
+        <div class="repas-photo-zone">
+          <label class="repas-photo-label">
+            <input type="file" name="photo" accept="image/*" class="repas-photo-input"
+                   onchange="previewPhoto(this)">
+            {% if r.photo %}
+            <div class="repas-photo-placeholder" id="preview-edit-{{ r.id }}">
+              <img src="{{ url_for('static', filename='img/' + r.photo) }}"
+                   alt="{{ r.nom }}" class="repas-photo-preview">
+              <span class="repas-photo-change">🔄 Changer la photo</span>
+            </div>
+            {% else %}
+            <div class="repas-photo-placeholder" id="preview-edit-{{ r.id }}">
+              <span class="repas-photo-icon">📷</span>
+              <span class="repas-photo-hint">Cliquer pour ajouter une photo</span>
+              <span class="repas-photo-sub">JPG, PNG, WEBP — max 2 Mo</span>
+            </div>
+            {% endif %}
+          </label> 
+        </div>
+      
+        {# ── Champs ── #}
+        <div class="repas-form-fields">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nom</label>
+              <input type="text" name="nom" class="form-input" value="{{ r.nom }}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Catégorie</label>
+              <select name="categorie" class="form-input select" required>
+                <option value="Entrées"          {% if r.categorie=='Entrées'          %}selected{% endif %}>Entrées</option>
+                <option value="Plats principaux" {% if r.categorie=='Plats principaux' %}selected{% endif %}>Plats principaux</option>
+                <option value="Desserts"         {% if r.categorie=='Desserts'         %}selected{% endif %}>Desserts</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Prix (€)</label>
+              <input type="number" name="prix" class="form-input" step="0.01" min="0" value="{{ r.prix }}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Stock</label>
+              <input type="number" name="quantite" class="form-input" min="0" value="{{ r.quantite }}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Statut</label>
+              <select name="statut" class="form-input select">
+                <option value="disponible"   {% if r.statut=='disponible'   %}selected{% endif %}>✔ Disponible</option>
+                <option value="indisponible" {% if r.statut=='indisponible' %}selected{% endif %}>✕ Indisponible</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-input" rows="3">{{ r.description }}</textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <!--<a href="{{ url_for('repas') }}?panel=repas" class="btn-sm">Annuler</a>-->
+        <button type="submit" class="btn-primary">💾 Enregistrer</button>
+      </div>
+
+    </form>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {# ── Filtres ── #}
+  <div class="toolbar">
+    <div class="filter-group">
+      <a href="{{ url_for('admin') }}?panel=repas"
+        class="filter-pill {{ 'active' if not cf }}">Tous</a>
+      <a href="{{ url_for('admin') }}?panel=repas&cat_filter=Entrées"
+        class="filter-pill yellow {{ 'active' if cf == 'Entrées' }}">🥗 Entrées</a>
+      <a href="{{ url_for('admin') }}?panel=repas&cat_filter=Plats+principaux"
+        class="filter-pill orange {{ 'active' if cf == 'Plats principaux' }}">🍖 Plats</a>
+      <a href="{{ url_for('admin') }}?panel=repas&cat_filter=Desserts"
+        class="filter-pill blue {{ 'active' if cf == 'Desserts' }}">🍰 Desserts</a>
+    </div>
+  </div>
+
+  {# ── Tableau ── #}
+  <div class="card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Photo</th>
+          <th>Nom</th>
+          <th>Catégorie</th>
+          <th>Description</th>
+          <th>Prix</th>
+          <th>Stock</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set repas_filtres = repas if not cf else repas | selectattr('categorie','equalto',cf) | list %}
+        {% if repas_filtres | length > 0 %}
+          {% for r in repas_filtres %}
+          <tr>
+           <td>
+              {% if r.photo %}
+              <img src="{{ url_for('static', filename='img/' + r.photo) }}"
+                  alt="{{ r.nom }}" class="repas-thumb">
+              {% else %}
+              <div class="repas-thumb-empty">🍽️</div>
+              {% endif %}
+            </td>
+            <td><strong>{{ r.nom }}</strong></td>
+            <td><span class="pill">{{ r.categorie }}</span></td>
+            <td class="muted desc-cell">
+              {{ r.description[:55] }}{% if r.description | length > 55 %}…{% endif %}
+            </td>
+            <td><strong>{{ r.prix }} €</strong></td>
+            <td>
+              <span class="{{ 'badge badge-red' if r.quantite < 5 else 'mono' }}">
+                {{ r.quantite }}
+              </span>
+            </td>
+            <td>
+              {% if r.statut == 'disponible' %}
+                <span class="badge badge-green">✔ Disponible</span>
+              {% else %}
+                <span class="badge badge-red">✕ Indispo</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="actions-group">
+                <a href="{{ url_for('admin') }}?panel=repas&mode=modifier&edit_id={{ r.id }}"
+                  class="btn-sm">✏️ Modifier</a>
+                <form method="POST" action="{{ url_for('deleteRepas', id=r.id) }}"
+                      onsubmit="return confirm('Supprimer « {{ r.nom }} » ?')">
+                  <button type="submit" class="btn-sm btn-danger">🗑</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+        <tr><td colspan="8" class="empty">🍽️ Aucun plat trouvé</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  {% endif %}
+
+  </main>
+</div>
+
+<footer class="admin-footer">
+  &copy; 2026 Restaurant — Admin Panel
+</footer>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".flash").forEach(el => {
+    setTimeout(() => el.classList.add("flash-hide"), 3500);
+  });
+});
+</script>
+{% endblock %}

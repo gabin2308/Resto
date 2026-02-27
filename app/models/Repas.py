@@ -8,7 +8,7 @@ class Repas:
         self.prix = dico["prix"]
         self.statut = dico["statut"]
         self.quantite = dico["quantite"]
-        
+        self.photo = dico.get("photo", None)
     def getPrix(self):
         return self.prix
     
@@ -27,4 +27,5 @@ class Repas:
     def getQuantite(self):
         return self.quantite
     
-    
+    def getPhoto(self):        
+        return self.photo

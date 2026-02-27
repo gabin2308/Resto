@@ -78,9 +78,9 @@
         {# ── Grille repas ── #}
         <div class="meals-grid">
             {% for r in repas %}
-                {% set repasname = r.nom|slugify %}
+                {% set repasname = r.nom|lower|replace(" ", "_") %}
                 {% set imgsrc = url_for("static", filename="img/" ~ repasname ~ ".jpg") %}
-                <div class="meal-card" id = "repas-{{r.id}}">
+                <div class="meal-card">
                     <div class="meal-img-wrapper">
                         <img src="{{ imgsrc }}" alt="{{ r.nom }}">
                     </div>
@@ -98,7 +98,7 @@
                         <div class="meal-price">{{ r.prix }} €</div>
 
                         {# ── Formulaire ajout au panier ── #}
-                        <form method="POST" action="{{ url_for('ajouterPanier') }}#repas-{{r.id}}">
+                        <form method="POST" action="{{ url_for('ajouterPanier') }}">
                             <input type="hidden" name="id"   value="{{ r.id }}">
                             <input type="hidden" name="nom"  value="{{ r.nom }}">
                             <input type="hidden" name="prix" value="{{ r.prix }}">
@@ -133,4 +133,108 @@
     </div>
 </footer>
 
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ── Utilitaire : recharge la grille + le bloc "vide" sans refresh ── */
+    async function fetchAndUpdateGrid(url) {
+        try {
+            const response = await fetch(url, {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+            if (!response.ok) return;
+
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+
+            /* Met à jour la grille de repas */
+            const newGrid = doc.querySelector(".meals-grid");
+            const curGrid = document.querySelector(".meals-grid");
+            if (newGrid && curGrid) curGrid.innerHTML = newGrid.innerHTML;
+
+            /* Met à jour le message "aucun résultat" */
+            const newVide = doc.querySelector(".search-vide");
+            const curVide = document.querySelector(".search-vide");
+            if (newVide) {
+                if (curVide) curVide.outerHTML = newVide.outerHTML;
+                else curGrid.insertAdjacentHTML("beforebegin", newVide.outerHTML);
+            } else if (curVide) {
+                curVide.remove();
+            }
+
+            /* Met à jour l'URL dans la barre d'adresse sans recharger */
+            history.pushState(null, "", url);
+
+            /* Réattache les listeners du panier sur les nouvelles cartes */
+            bindCartForms();
+
+        } catch (err) {
+            console.error("Erreur fetch :", err);
+        }
+    }
+
+    /* ── Formulaires de recherche & filtres (GET) ── */
+    function bindFilterForms() {
+        document.querySelectorAll("form[method='GET']").forEach(form => {
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const url = form.action + "?" + new URLSearchParams(new FormData(form));
+                await fetchAndUpdateGrid(url);
+            });
+        });
+
+        /* Boutons-filtres catégorie (submit sans input texte) */
+        document.querySelectorAll(".filter-btn").forEach(btn => {
+            btn.addEventListener("click", async function (e) {
+                e.preventDefault();
+                const url = btn.closest("form").action + "?cat=" + encodeURIComponent(btn.value);
+                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                await fetchAndUpdateGrid(url);
+            });
+        });
+    }
+
+    /* ── Formulaires d'ajout au panier (POST) ── */
+    function bindCartForms() {
+        document.querySelectorAll("form[action*='ajouterPanier']").forEach(form => {
+            /* Évite de doubler les listeners */
+            if (form.dataset.bound) return;
+            form.dataset.bound = "1";
+
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                try {
+                    const response = await fetch(form.action, {
+                        method: "POST",
+                        body: new FormData(form)
+                    });
+                    if (response.ok) {
+                        const btn = form.querySelector("button[type='submit']");
+                        const original = btn.textContent.trim();
+                        btn.textContent = "✔ Ajouté !";
+                        btn.disabled = true;
+                        setTimeout(() => {
+                            btn.textContent = original;
+                            btn.disabled = false;
+                        }, 1500);
+                    }
+                } catch (err) {
+                    console.error("Erreur panier :", err);
+                }
+            });
+        });
+    }
+
+    /* ── Initialisation ── */
+    bindFilterForms();
+    bindCartForms();
+
+    /* ── Bouton retour du navigateur ── */
+    window.addEventListener("popstate", () => fetchAndUpdateGrid(location.href));
+});
+</script>
 {% endblock %}

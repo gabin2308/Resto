@@ -29,10 +29,14 @@
                         Nos Repas
                     </a>
                 </li>
-                <li class="nav-item">
+               <li class="nav-item">
                     <a href="{{ url_for('mesCommandes') }}"
-                       class="nav-btn {{ 'active' if request.endpoint == 'mesCommandes' }}">
+                    class="nav-btn {{ 'active' if request.endpoint == 'mesCommandes' }}"
+                    style="position: relative;">
                         Mes Commandes
+                        {% if commandes_count and commandes_count > 0 %}
+                            <span class="cart-count">{{ commandes_count }}</span>
+                        {% endif %}
                     </a>
                 </li>
             </ul>
@@ -47,16 +51,24 @@
                     </span>
                 </li>
 
-                {% if session["role"] == "admin" %}
+                {% if session["role"] in ["gestionnaire"] %}
                 <!-- ── Bouton Gestionnaire (admin uniquement) ── -->
                 <li class="nav-item">
                     <a href="{{ url_for('gestionnaire') }}"
                        class="nav-btn nav-btn-admin {{ 'active' if request.endpoint == 'gestionnaire' }}">
-                        🛡 Gestionnaire
+                        ⚙️ Gestionnaire
                     </a>
                 </li>
                 {% endif %}
-
+                {% if session["role"] == "admin" %}
+                <!-- ── Bouton Admin(admin uniquement) ── -->
+                <li class="nav-item">
+                    <a href="{{ url_for('admin') }}"
+                       class="nav-btn nav-btn-admin {{ 'active' if request.endpoint == 'admin' }}">
+                        🛡 Admin
+                    </a>
+                </li>
+                {% endif %}
                 <li class="nav-item">
                     <a href="{{ url_for('logout') }}" class="nav-btn cta">
                         Déconnexion
@@ -95,3 +107,22 @@
         </div>
     </div>
 </nav>
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+
+        const toggle = document.getElementById("nav-toggle");
+        const hamburger = document.querySelector('.nav-hamburger');
+        const links = document.querySelectorAll('.nav-menu a, .nav-actions a')
+        hamburger.addEventListener("click", function(){
+            hamburger.classList.toggle("active")});
+
+        links.forEach(link =>{
+            link.addEventListener("click", function(){
+                toggle.checked = false;
+                hamburger.classList.remove("active")
+            });
+        });
+            
+       
+    });
+</script>

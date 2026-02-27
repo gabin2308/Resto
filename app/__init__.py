@@ -22,3 +22,15 @@ def inject_panier_count():
         return {'panier_count': p.count}
     except:
         return {'panier_count': 0}
+    
+from app.services.CommandesService import CommandesService
+
+@app.context_processor
+def inject_commandes_count():
+    from flask import session
+    count = 0
+    if "logged" in session and session.get("user_id"):
+        cs = CommandesService()
+        commandes = cs.getByUserIdAndStatut(session["user_id"], "en attente")
+        count = len(commandes) if commandes else 0
+    return dict(commandes_count=count)

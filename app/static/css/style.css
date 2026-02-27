@@ -527,3 +527,9 @@ body {
     .features-grid { grid-template-columns: 1fr; }
     .container     { padding: 0 1.25rem; }
 }
+.nav-btn {
+    /* déjà présent, ajoute juste : */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}

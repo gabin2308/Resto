@@ -39,7 +39,7 @@
         {# ── Filtres par statut ── #}
         <div class="gest-filters">
             <form method="GET" action="{{ url_for('gestionnaire') }}">
-                <button type="submit" name="statut" value=""
+                <button type="submit" name="statut" value="toute"
                         class="gest-filter-btn {% if not request.args.get('statut') %}active{% endif %}">
                     Toutes
                 </button>

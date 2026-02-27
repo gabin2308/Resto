@@ -74,6 +74,38 @@ class RepasJsonDAO(RepasDAOInterface):
                     repas_found.append(Repas(r))
 
 
+    def ajouterRepas(self, nom, description, categorie, prix, statut, quantite):
+   
+
+    # Charger le fichier JSON
+        with open(self.repas, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        # Générer un nouvel id automatiquement
+        nouvel_id = max((r.get("id", 0) for repas in data for r in repas), default=0) + 1
+
+        # Créer le nouveau repas
+        nouveau = {
+            "id": nouvel_id,
+            "nom": nom,
+            "description": description,
+            "categorie": categorie,
+            "prix": prix,
+            "statut": statut,
+            "quantite": quantite
+        }
+
+        # Ajouter dans la première liste (ou créer une nouvelle)
+        if data:
+            data[0].append(nouveau)
+        else:
+            data.append([nouveau])
+
+        # Sauvegarder
+        with open(self.repas, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+
 class RepasSqliteDAO(RepasDAOInterface):
 
     def __init__(self):
@@ -93,7 +125,7 @@ class RepasSqliteDAO(RepasDAOInterface):
         connection.close()
         repas_list = []
         for row in rows:
-            repas = Repas(row)
+            repas = Repas(dict(row))
             repas_list.append(repas)
         return repas_list
     
@@ -130,7 +162,44 @@ class RepasSqliteDAO(RepasDAOInterface):
         cursor = connection.cursor()
         query = "SELECT * FROM repas WHERE statut = ? ORDER BY prix ASC"
         rows = cursor.execute(query, (statut,)).fetchall()
+        connection.commit()
         connection.close()
         return [Repas(dict(row)) for row in rows]
+    
+    def ajouterRepas(self,nom, description, categorie, prix, statut, quantite,photo=None):
+        
+        connection = self._getDbconnection()
+        cursor = connection.cursor()
+        cursor.execute("""
+            INSERT INTO repas ( nom, description, categorie, prix, statut,quantite,photo) VALUES (?,?,?,?,?,?,?)
+                       """, ( nom, description, categorie, prix,statut, quantite,photo))
+        
+        connection.commit()
+        connection.close()
+
+    def deleteRepas(self,id):
+        
+        connection = self._getDbconnection()
+        cursor = connection.cursor()
+        try:
+            connection.execute("DELETE FROM repas WHERE id = :id", {"id": id})
+            connection.commit()
+        finally:
+            connection.close()
+
+
+    def updateRepas(self, id, n, desc, cat, p, s, q, photo=None):  
+        
+        connection = self._getDbconnection()
+        cursor = connection.cursor()
+        if photo:
+            query = "UPDATE repas SET nom=?, description=?, categorie=?, prix=?, statut=?, quantite=?, photo=? WHERE id=?"
+            cursor.execute(query, (n, desc, cat, p, s, q, photo, id))  
+        else:
+            query = "UPDATE repas SET nom=?, description=?, categorie=?, prix=?, statut=?, quantite=? WHERE id=?"
+            cursor.execute(query, (n, desc, cat, p, s, q, id)) 
+        connection.commit()
+        connection.close()
+
     
     

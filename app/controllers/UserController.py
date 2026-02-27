@@ -15,7 +15,7 @@ def login_required(f):
            return redirect(url_for('login'))
     return wrap
 
-def reqrole(role):
+def reqrole(*roles):
     def wrap(f):
         @wraps(f)
         def verifyRole(*args, **kwargs):
@@ -23,7 +23,7 @@ def reqrole(role):
                 return redirect(url_for('login'))
             
             current_role = session.get('role')
-            if current_role != role:
+            if current_role not in  roles:
                 abort(403)  # Forbidden
             return f(*args, **kwargs)
         return verifyRole

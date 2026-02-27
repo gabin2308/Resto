@@ -39,6 +39,12 @@ class RepasService:
         
         return list({r.categorie: 1 for r in tous}.keys())
     
+    def ajouterRepas(self,  nom ,description, categorie,prix, statut, quantite, photo=None ):
+        return self.rdao.ajouterRepas(  nom ,description, categorie,prix, statut, quantite, photo )
     
-
     
+    def deleteRepas(self, id):
+        return  self.rdao.deleteRepas(id)
+    
+    def updateRepas(self, id, n, desc, cat, p, s, q, photo=None):
+        return self.rdao.updateRepas(id, n, desc, cat, p, s, q, photo)

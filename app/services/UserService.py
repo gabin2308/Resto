@@ -36,3 +36,9 @@ class UserService():
 
     def deleteUser(self, user_id):
         return self.udao.deleteUser(user_id)
+    
+    def findByRole(self, role):
+        return self.udao.findByRole(role)
+    
+    def updateByRole(self, id, role):
+        return self.udao.updateByRole(id, role)
