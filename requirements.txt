@@ -1,4 +1,5 @@
 flask
+flask-bcrypt
 flask-socketio
 bcrypt
 python-dotenv
