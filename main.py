@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 load_dotenv()  
 
 def slugify(text):
+    if not text:
+        return ""
     text = unicodedata.normalize('NFD', text)
     text = ''.join(c for c in text if unicodedata.category(c) != 'Mn')
     return text.lower().replace(" ", "_")

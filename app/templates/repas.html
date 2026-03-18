@@ -78,7 +78,7 @@
         {# ── Grille repas ── #}
         <div class="meals-grid">
             {% for r in repas %}
-                {% set repasname = r.nom|slugify %}
+                {% set repasname = (r.nom or '')|slugify %}
                 {% set imgsrc = url_for("static", filename="img/" ~ repasname ~ ".jpg") %}
                 <div class="meal-card" id = "repas-{{r.id}}">
                     <div class="meal-img-wrapper">
