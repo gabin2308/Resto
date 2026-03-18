@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request,session, redirect, url_for
 from app import app
 from app.services.PanierService import PanierService
 from app.controllers.UserController import login_required
@@ -30,7 +30,7 @@ class PanierController:
         return redirect(url_for('categorie'))
 
     
-    @app.route('/panier/supprimer/<int:id>', methods=['POST'])
+    @app.route('/panier/supprimer/<int:id>', methods=['POST','GET'])
     @login_required
     def supprimerPanier(id):
         ps = PanierService()

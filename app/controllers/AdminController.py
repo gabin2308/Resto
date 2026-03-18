@@ -34,7 +34,7 @@ class AdminController:
         users = us.getUsers()
         
         return render_template(
-            'admin.html',
+            'admin.html', 
             commandes=commandes,
             repas = repas,users = users,
             metadata={"title": "Admin"}
@@ -171,6 +171,19 @@ class AdminController:
         rs.updateRepas(id, n, d, c, p, s, q)
         flash(f'✔ Repas modifié avec succès.', 'success')
         return redirect(url_for('admin', panel='repas'))  
+    
+    @app.route('/admin/<int:user_id>/statut/<int:id>', methods=['POST'])
+    @reqrole('admin')
+    def changerStatutAdmin(user_id,id):
+        cs = CommandesService()
+        nouveau_statut = request.form.get('statut','')
+        statuts_autorises = ['en attente', 'en cours', 'livrée', 'annulée']
+        if nouveau_statut not in statuts_autorises:
+            flash('Statut invalide.', 'error')
+            return redirect(url_for('admin'))
+        cs.getUpdateByStatut(user_id, nouveau_statut,id)
+        flash(f'La commande # {id} de l\'utilisateur #{user_id} mises à jour : {nouveau_statut}', 'success')
+        return redirect(url_for('admin'))
         
     
 

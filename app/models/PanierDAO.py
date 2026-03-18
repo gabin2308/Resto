@@ -150,30 +150,36 @@ class PanierSqliteDAO(PanierDAOInterface):
         connection.commit()
         connection.close()
 
-    def supprimerRepas(self, id, user_id):
+    def supprimerRepas(self, user_id,id):
         connection = self._getDbConnection()
         cursor = connection.cursor()
-
-        # Récupère le panier existant
         row = cursor.execute("SELECT * FROM paniers WHERE user_id =?", (user_id,)).fetchone()
 
+        print("=== SUPPRIMER REPAS ===")
+        print("USER ID:", user_id)
+        print("ROW:", row)
+
         if row:
-            # Charge les items
             items = json.loads(row['items'])
+            print("ITEMS AVANT:", items)
+            print("ID À SUPPRIMER:", id, "| TYPE:", type(id))
+            if items:
+                print("TYPE ID DANS ITEMS:", type(items[0]['id']))
 
-            # Retire l'article dont l'id correspond
-            items = [item for item in items if item['id'] != id]
+            items = [item for item in items if str(item['id']) != str(id)]
+            print("ITEMS APRÈS:", items)
 
-            # Recalcule total et count après suppression
             total = round(sum(i['prix'] * i['quantite'] for i in items), 2)
             count = sum(i['quantite'] for i in items)
-
             cursor.execute("""
                 UPDATE paniers SET items = ?, total = ?, count = ?
                 WHERE id = ?
             """, (json.dumps(items), total, count, row['id']))
+            connection.commit()
+            print("COMMIT OK")
+        else:
+            print("AUCUN PANIER TROUVÉ POUR CET USER")
 
-        connection.commit()
         connection.close()
 
     def viderPanier(self, user_id):

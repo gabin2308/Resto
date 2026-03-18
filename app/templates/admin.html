@@ -166,7 +166,7 @@
               </td>
               <td>
                 <form method="POST"
-                      action="{{ url_for('changerStatut', user_id=commande.user_id, id=commande.id) }}"
+                      action="{{ url_for('changerStatutAdmin', user_id=commande.user_id, id=commande.id) }}"
                       class="inline-form">
                   <select name="statut" class="select">
                     <option value="en attente" {% if commande.statut=='en attente' %}selected{% endif %}>⏳ En attente</option>
