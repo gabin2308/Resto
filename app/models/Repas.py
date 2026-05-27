@@ -29,3 +29,14 @@ class Repas:
     
     def getPhoto(self):        
         return self.photo
+    def to_dict(self):
+        return {
+        "id":          self.id,
+        "nom":         self.nom,
+        "description": self.description,
+        "categorie":   self.categorie,
+        "prix":        self.prix,
+        "statut":      self.statut,
+        "quantite":    self.quantite,
+        "photo":       self.photo
+    }

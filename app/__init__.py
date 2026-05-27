@@ -1,36 +1,32 @@
 from flask import Flask, session
 from dotenv import load_dotenv
+from flask_cors import CORS
 import stripe
 import os
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask import jsonify
 
-load_dotenv()  # en premier avant tout
+load_dotenv()
 
 app = Flask(__name__, static_url_path='/static')
 app.config["SESSION_COOKIE_SECURE"] = False
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # ← ajoute ça
 app.secret_key = 'ma cle secrete unique'
 
-stripe.api_key = os.getenv('STRIPE_SECRET_KEY')  #  lit depuis .env
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
-from app.controllers import *
+# CORS avec credentials
+CORS(app,
+     origins=["http://localhost:5175", "http://localhost:5173"],
+     supports_credentials=True  # ← obligatoire pour les cookies
+)
 
-@app.context_processor
-def inject_panier_count():
-    try:
-        from app.services.PanierService import PanierService
-        ps = PanierService()
-        p = ps.getAllPanier()
-        return {'panier_count': p.count}
-    except:
-        return {'panier_count': 0}
-    
-from app.services.CommandesService import CommandesService
+limiter = Limiter(get_remote_address, app=app, default_limits=["200 per day", "50 per hour"])
 
-@app.context_processor
-def inject_commandes_count():
-    from flask import session
-    count = 0
-    if "logged" in session and session.get("user_id"):
-        cs = CommandesService()
-        commandes = cs.getByUserIdAndStatut(session["user_id"], "en attente")
-        count = len(commandes) if commandes else 0
-    return dict(commandes_count=count)
+@app.errorhandler(429)
+def trop_de_requetes(e):
+    return jsonify({"error": "Trop de requêtes, veuillez réessayer plus tard."}), 429
+
+from app.controllers import register_all
+register_all(app)

@@ -1,60 +1,115 @@
-from flask import render_template, request, redirect, url_for, session
-from app import app
-import json
+# from flask import render_template, request, redirect, url_for, session
+# from app import app
+# import json
+# from datetime import datetime
+# from app.services.CommandesService import CommandesService
+# from app.services.PanierService import PanierService
+# from app.controllers.UserController import login_required
+
+# class CommandesController:
+
+    
+#     #@app.route('/panier/commander', methods=['POST'])
+#     #@login_required
+#     #def confirmerCommande():
+
+#         #user_id = session.get('user_id')
+#         #if not user_id:
+#             #return redirect(url_for('login'))
+
+#         #cs      = CommandesService()
+#         #ps      = PanierService()
+#         #p       = ps.getAllPanier()
+
+#         #cs.ajouter(
+#             #date    = datetime.now().strftime('%Y-%m-%d %H:%M'),
+#             #items   = p.items,
+#             #total   = p.total,
+#             #statut  = 'en attente',
+#             #user_id = user_id  
+#         #)
+#         #ps.viderPanier()
+
+#         #commandes = cs.getByUserId(user_id)  #  uniquement ses commandes
+#         #metadata  = {'title': 'Confirmation'}
+#         #return render_template('confirmation.html',
+#                                #panier=p.items,
+#                                #commandes=commandes,
+#                                #metadata=metadata)
+
+
+#     @app.route('/commandes', methods=['GET'])
+#     @login_required
+#     def mesCommandes():
+#         cs      = CommandesService()
+
+#         user_id = session.get('user_id')  
+        
+#         print(f"DEBUG user_id = {user_id}")  #  vérifie dans le terminal
+
+#         statut  = request.args.get('statut', 'tous')
+
+#         if statut and statut != 'tous':
+#             commandes = cs.getByUserIdAndStatut(user_id, statut)  
+#         else:
+#             commandes = cs.getByUserId(session['user_id'])  
+
+#         metadata = {'title': 'Mes Commandes'}
+#         return render_template('commandes.html',
+#                                commandes=commandes,
+#                                metadata=metadata)
+from flask import request, jsonify, session
+from flask import Blueprint
 from datetime import datetime
 from app.services.CommandesService import CommandesService
 from app.services.PanierService import PanierService
 from app.controllers.UserController import login_required
 
 class CommandesController:
+    def __init__(self):
+        self.blueprint = Blueprint("commandes", __name__)
+        self._register_routes()
 
-    
-    #@app.route('/panier/commander', methods=['POST'])
-    #@login_required
-    #def confirmerCommande():
+    def _register_routes(self):
+        self.blueprint.add_url_rule("/", view_func=self.mesCommandes,      methods=["GET"])
+        self.blueprint.add_url_rule("/", view_func=self.confirmerCommande, methods=["POST"])
 
-        #user_id = session.get('user_id')
-        #if not user_id:
-            #return redirect(url_for('login'))
-
-        #cs      = CommandesService()
-        #ps      = PanierService()
-        #p       = ps.getAllPanier()
-
-        #cs.ajouter(
-            #date    = datetime.now().strftime('%Y-%m-%d %H:%M'),
-            #items   = p.items,
-            #total   = p.total,
-            #statut  = 'en attente',
-            #user_id = user_id  
-        #)
-        #ps.viderPanier()
-
-        #commandes = cs.getByUserId(user_id)  #  uniquement ses commandes
-        #metadata  = {'title': 'Confirmation'}
-        #return render_template('confirmation.html',
-                               #panier=p.items,
-                               #commandes=commandes,
-                               #metadata=metadata)
-
-
-    @app.route('/commandes', methods=['GET'])
-    @login_required
-    def mesCommandes():
+    def mesCommandes(self):
         cs      = CommandesService()
-
-        user_id = session.get('user_id')  
-        
-        print(f"DEBUG user_id = {user_id}")  #  vérifie dans le terminal
-
+        user_id = session.get('user_id')
         statut  = request.args.get('statut', 'tous')
 
         if statut and statut != 'tous':
-            commandes = cs.getByUserIdAndStatut(user_id, statut)  
+            commandes = cs.getByUserIdAndStatut(user_id, statut)
         else:
-            commandes = cs.getByUserId(session['user_id'])  
+            commandes = cs.getByUserId(user_id)
 
-        metadata = {'title': 'Mes Commandes'}
-        return render_template('commandes.html',
-                               commandes=commandes,
-                               metadata=metadata)
+        return jsonify([c.to_dict() for c in commandes])
+
+    def confirmerCommande(self):
+        cs      = CommandesService()
+        ps      = PanierService()
+        user_id = session.get('user_id')
+        p       = ps.getAllPanier()
+
+        if not p.items:
+            return jsonify({"error": "Panier vide"}), 400
+
+        id_commande = cs.ajouter(
+            date    = datetime.now().strftime('%Y-%m-%d %H:%M'),
+            items   = p.items,
+            total   = p.total,
+            statut  = 'en attente',
+            user_id = user_id
+        )
+
+        ps.viderPanier()
+
+        return jsonify({
+            "success":     True,
+            "id_commande": id_commande,
+            "total":       p.total,
+            "message":     "Commande confirmée"
+        }), 201
+
+ctrl = CommandesController()
