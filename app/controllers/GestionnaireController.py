@@ -83,7 +83,7 @@ class GestionnaireController:
             "commandes": [c.to_dict() for c in commandes],
             "users":     [u.to_dict() for u in users] if isinstance(users, list) else [users.to_dict()]
         })
-
+    
     def changerStatut(self, id):
         cs              = CommandesService()
         data            = request.json or {}

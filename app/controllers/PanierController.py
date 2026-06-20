@@ -68,12 +68,12 @@ class PanierController:
         self._register_routes()
 
     def _register_routes(self):
-        self.blueprint.add_url_rule("/",                  view_func=self.getPanier,       methods=["GET"])
-        self.blueprint.add_url_rule("/ajouter",           view_func=self.ajouterPanier,   methods=["POST"])
-        self.blueprint.add_url_rule("/supprimer/<int:id>", view_func=self.supprimerPanier, methods=["DELETE"])
-        self.blueprint.add_url_rule("/vider",             view_func=self.viderPanier,     methods=["DELETE"])
-        self.blueprint.add_url_rule("/commander",         view_func=self.passerCommande,  methods=["GET"])
-
+        self.blueprint.add_url_rule("/",                  view_func=login_required(self.getPanier),       methods=["GET"])
+        self.blueprint.add_url_rule("/ajouter",           view_func=login_required(self.ajouterPanier),   methods=["POST"])
+        self.blueprint.add_url_rule("/supprimer/<int:id>", view_func=login_required(self.supprimerPanier), methods=["DELETE"])
+        self.blueprint.add_url_rule("/vider",             view_func=login_required(self.viderPanier),     methods=["DELETE"])
+        self.blueprint.add_url_rule("/commander",         view_func=login_required(self.passerCommande),  methods=["GET"])
+    
     def getPanier(self):
         ps = PanierService()
         p  = ps.getAllPanier()
@@ -82,7 +82,7 @@ class PanierController:
             "total": p.total,
             "count": p.count
         })
-
+    
     def ajouterPanier(self):
         ps       = PanierService()
         data     = request.json or {}
@@ -96,17 +96,19 @@ class PanierController:
 
         ps.ajouterRepas(id, nom, prix, quantite)
         return jsonify({"success": True, "message": f"{nom} ajouté au panier"})
-
+   
     def supprimerPanier(self, id):
         ps = PanierService()
         ps.supprimerRepas(id)
         return jsonify({"success": True, "message": f"Repas #{id} supprimé"})
 
+   
     def viderPanier(self):
         ps = PanierService()
         ps.viderPanier()
         return jsonify({"success": True, "message": "Panier vidé"})
 
+    
     def passerCommande(self):
         ps = PanierService()
         p  = ps.getAllPanier()

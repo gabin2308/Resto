@@ -9,3 +9,13 @@ class Commandes:
         #self.nom_client  = dico.get('nom_client', '')
         #self.adresse     = dico.get('adresse', '')       
         #self.telephone   = dico.get('telephone', '')     
+
+    def to_dict(self):
+        return {
+            "id":      self.id,
+            "user_id": self.user_id,
+            "date":    self.date,
+            "items":   self.items,
+            "total":   self.total,
+            "statut":  self.statut
+        }

@@ -162,7 +162,7 @@ class PanierSqliteDAO(PanierDAOInterface):
             items = json.loads(row['items'])
 
             # Retire l'article dont l'id correspond
-            items = [item for item in items if item['id'] != id]
+            items = [item for item in items if int(item['id']) != int(id)]
 
             # Recalcule total et count après suppression
             total = round(sum(i['prix'] * i['quantite'] for i in items), 2)

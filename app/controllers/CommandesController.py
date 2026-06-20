@@ -64,6 +64,8 @@ from datetime import datetime
 from app.services.CommandesService import CommandesService
 from app.services.PanierService import PanierService
 from app.controllers.UserController import login_required
+from app.services.RecuService import RecuService
+from flask import send_file
 
 class CommandesController:
     def __init__(self):
@@ -73,7 +75,9 @@ class CommandesController:
     def _register_routes(self):
         self.blueprint.add_url_rule("/", view_func=self.mesCommandes,      methods=["GET"])
         self.blueprint.add_url_rule("/", view_func=self.confirmerCommande, methods=["POST"])
+        self.blueprint.add_url_rule("/<int:id>/recu", view_func=self.telechargerRecu, methods=["GET"])  # ← ajoute route pour le reçu
 
+    @login_required
     def mesCommandes(self):
         cs      = CommandesService()
         user_id = session.get('user_id')
@@ -85,7 +89,8 @@ class CommandesController:
             commandes = cs.getByUserId(user_id)
 
         return jsonify([c.to_dict() for c in commandes])
-
+    
+    @login_required
     def confirmerCommande(self):
         cs      = CommandesService()
         ps      = PanierService()
@@ -111,5 +116,22 @@ class CommandesController:
             "total":       p.total,
             "message":     "Commande confirmée"
         }), 201
+    
+    def telechargerRecu(self, id):
+        cs  = CommandesService()
+        rs  = RecuService()
+
+        commande = cs.getById(id)
+        if not commande:
+            return jsonify({"error": "Commande introuvable"}), 404
+
+        buffer = rs.generer(commande)
+
+        return send_file(
+            buffer,
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=f"recu_commande_{id}.pdf"
+        )
 
 ctrl = CommandesController()

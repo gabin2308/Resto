@@ -12,4 +12,4 @@ def slugify(text):
 app.jinja_env.filters['slugify'] = slugify
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000)

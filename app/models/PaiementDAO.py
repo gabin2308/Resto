@@ -125,3 +125,27 @@ class PaiementSqliteDAO(PaiementDAOInterface):
         cursor.execute("DELETE FROM paiements WHERE id = ?", (id,))
         connection.commit()
         connection.close()
+
+    def findByUserId(self, user_id):
+        connection = self._getDbConnection()
+        cursor = connection.cursor()
+        rows = cursor.execute("""
+            SELECT p.* FROM paiements p
+            JOIN commandes c ON p.id_commande = c.id
+            WHERE c.user_id = ?
+            ORDER BY p.date DESC
+        """, (user_id,)).fetchall()
+        connection.close()
+        return [Paiement(dict(row)) for row in rows]
+
+    def findByUserIdAndStatut(self, user_id, statut):
+        connection = self._getDbConnection()
+        cursor = connection.cursor()
+        rows = cursor.execute("""
+            SELECT p.* FROM paiements p
+            JOIN commandes c ON p.id_commande = c.id
+            WHERE c.user_id = ? AND p.statut = ?
+            ORDER BY p.date DESC
+        """, (user_id, statut)).fetchall()
+        connection.close()
+        return [Paiement(dict(row)) for row in rows]

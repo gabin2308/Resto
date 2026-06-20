@@ -23,9 +23,8 @@ class PanierService:
 
     def ajouterRepas(self, id, nom, prix, quantite):
         self.pdao.ajouterRepas(self._getUserId(),id, nom, prix, quantite)
-
     def supprimerRepas(self, id):
-        self.pdao.supprimerRepas(self._getUserId(),id)
+        self.pdao.supprimerRepas(id, self._getUserId())
 
     def viderPanier(self):
         self.pdao.viderPanier(self._getUserId())
@@ -39,5 +38,16 @@ class PanierService:
     def getByUserId(self, user_id):
         return self.pdao.findByUserId(user_id)
     
+    # def _getUserId(self):
+    #     return session.get('user_id', 0)
     def _getUserId(self):
-        return session.get('user_id', 0)
+        user_id = session.get('user_id')
+        if not user_id:
+            return None
+        return user_id
+    
+    def getByUserId(self, user_id):
+        return self.pdao.findByUserId(user_id)
+
+    def getByUserIdAndStatut(self, user_id, statut):
+        return self.pdao.findByUserIdAndStatut(user_id, statut)

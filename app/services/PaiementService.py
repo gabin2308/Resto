@@ -55,3 +55,9 @@ class PaiementService:
     #  Supprime un paiement
     def supprimer(self, id):
         return self.pdao.supprimer(id)
+    
+    def getByUserId(self, user_id):
+        return self.pdao.findByUserId(user_id)
+
+    def getByUserIdAndStatut(self, user_id, statut):
+        return self.pdao.findByUserIdAndStatut(user_id, statut)

@@ -91,11 +91,11 @@ class RepasController:
         self._register_routes()
 
     def _register_routes(self):
-        self.blueprint.add_url_rule("/",          view_func=self.getRepas,      methods=["GET"])
-        self.blueprint.add_url_rule("/categories", view_func=self.getCategories, methods=["GET"])
-        self.blueprint.add_url_rule("/prix",       view_func=self.getRepasByPrix, methods=["GET"])
-        self.blueprint.add_url_rule("/recherche",  view_func=self.recherche,     methods=["GET"])
-
+        self.blueprint.add_url_rule("/",          view_func=login_required(self.getRepas),      methods=["GET"])
+        self.blueprint.add_url_rule("/categories", view_func=login_required(self.getCategories), methods=["GET"])
+        self.blueprint.add_url_rule("/prix",       view_func=login_required(self.getRepasByPrix), methods=["GET"])
+        self.blueprint.add_url_rule("/recherche",  view_func=login_required(self.recherche),     methods=["GET"])
+   
     def getRepas(self):
         rs  = RepasService()
         cat = request.args.get('cat')
@@ -106,11 +106,11 @@ class RepasController:
             repas = rs.getRepasByCategorie(cat)
 
         return jsonify([r.to_dict() for r in repas])
-
+    
     def getCategories(self):
         rs = RepasService()
         return jsonify(list(rs.getAllCategorie()))
-
+    
     def getRepasByPrix(self):
         rs   = RepasService()
         prix = request.args.get('prix_max')
@@ -121,7 +121,7 @@ class RepasController:
             repas = rs.getRepasAll()
 
         return jsonify([r.to_dict() for r in repas])
-
+   
     def recherche(self):
         rs     = RepasService()
         search = request.args.get('search', '')

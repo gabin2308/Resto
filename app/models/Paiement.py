@@ -10,3 +10,13 @@ class Paiement:
     def getMontant(self):    return self.montant
     def getStatut(self):     return self.statut
     def getStripeId(self):   return self.stripe_id
+
+    def to_dict(self):
+        return {
+            "id":          self.id,
+            "id_commande": self.id_commande,
+            "stripe_id":   self.stripe_id,
+            "montant":     self.montant,
+            "statut":      self.statut,
+            "date":        self.date
+        }

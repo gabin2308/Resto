@@ -250,3 +250,21 @@ class CommandesSqliteDAO(CommandesDAOInterface):
         cursor.execute(query, (statut, user_id,id))
         connection.commit()
         connection.close()
+
+    def findById(self, id):
+        connection = self._getDbConnection()
+        cursor = connection.cursor()
+        row = cursor.execute(
+            "SELECT * FROM commandes WHERE id = ?", (id,)
+        ).fetchone()
+        connection.close()
+        if row:
+            return Commandes({
+                'id'     : row['id'],
+                'user_id': row['user_id'],
+                'date'   : row['date'],
+                'items'  : json.loads(row['items']),
+                'total'  : row['total'],
+                'statut' : row['statut']
+            })
+        return None
